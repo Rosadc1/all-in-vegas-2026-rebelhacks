@@ -1,24 +1,24 @@
-Here is the updated README with a Run Locally section included:
+Got it. Here is the corrected README reflecting that All In Vegas is an event management platform where users view and create events in Las Vegas, with AI used for recommendations.
 
 ---
 
 # All In Vegas
 
-All In Vegas is an AI-powered trip planning app that transforms natural-language prompts into personalized, bookable, and map-based itineraries. Instead of rigid filters and static lists, users describe the experience they want and the app turns it into a tailored Las Vegas plan.
+All In Vegas is an event management platform for Las Vegas that allows users to discover, view, and create events in one centralized experience. AI is used to generate personalized event recommendations, helping users find experiences that match their interests while keeping full control over planning and organization.
 
 ## What Makes It Different
 
-All In Vegas blends AI-driven discovery with actionable planning:
+All In Vegas combines intelligent recommendations with practical event management tools:
 
-* AI-first discovery. Users enter creative prompts such as “romantic rooftop night with live music” instead of selecting filters.
-* Map-native planning. Recommendations are visualized on an interactive Google Map.
-* Built-in schedule builder. Save, edit, export, and share itineraries.
-* Actionable results. Each recommendation includes enriched venue data such as addresses, links, and availability.
-* Local and hidden events. Surfaces events mainstream aggregators often miss.
-* Collaborative itineraries. Create and share plans with friends.
-* Playful discovery modes. Mystery nights, persona-based suggestions, and reusable vibe templates.
+* AI-powered recommendations. Users can enter natural-language prompts to receive personalized event suggestions.
+* Event creation and management. Users can create and publish events directly within the platform.
+* Map-native experience. Events are visualized on an interactive Google Map.
+* Built-in schedule builder. Save, edit, export, and share event plans.
+* Local and hidden events. Highlights events that mainstream aggregators often miss.
+* Collaborative planning. Create and share event schedules with friends.
+* Smart follow-ups. The system adapts when additional clarification is needed.
 
-Discovery, mapping, and itinerary creation happen in one smooth flow.
+Discovery, event management, and itinerary organization happen in one streamlined flow.
 
 ## Architecture Overview
 
@@ -26,18 +26,19 @@ Discovery, mapping, and itinerary creation happen in one smooth flow.
 
 * React with TypeScript
 * Redux Toolkit with RTK Query for API state management
-* Google Maps API for interactive venue visualization
+* Google Maps API for interactive event visualization
 * Modular components including:
 
   * AIResponseDisplay
   * Chat modal interface
   * Schedule Builder
+  * Event creation forms
 
 ### Backend
 
 * AWS Lambda
 * Prompt engineering layer
-* AI model call
+* AI model call for recommendations
 * Deterministic enrichment layer that injects:
 
   * Verified venue details
@@ -45,21 +46,22 @@ Discovery, mapping, and itinerary creation happen in one smooth flow.
   * Links
   * Availability data
 
-The backend returns either a structured list of items or a narrative recommendation enriched with actionable metadata.
+The backend returns either structured event data or enriched narrative recommendations.
 
 ## User Flow
 
-1. User enters a natural-language prompt.
-2. Frontend sends the request via RTK Query ai-service.
-3. Lambda refines the prompt, calls the AI model, and enriches the output with real venue and event data.
-4. Frontend displays the response, plots venues on Google Map, and allows saving items to a schedule.
-5. User edits, exports, or shares the itinerary.
+1. User browses or creates events on the platform.
+2. If seeking recommendations, the user enters a natural-language prompt.
+3. Frontend sends the request via RTK Query ai-service.
+4. Lambda refines the prompt, calls the AI model, and enriches the output with real venue and event data.
+5. Frontend displays recommendations, plots them on Google Map, and allows saving items to a schedule.
+6. Users can edit, export, share, or manage their created events.
 
 ## Running the Project Locally
 
 ### Prerequisites
 
-* Node.js (v18 or later recommended)
+* Node.js v18 or later
 * npm
 
 ### Installation
@@ -83,25 +85,24 @@ Start the development server:
 npm run dev
 ```
 
-The app will start locally, typically at:
+The app will typically run at:
 
 ```
 http://localhost:5173
 ```
 
-Make sure any required environment variables such as API endpoints or Google Maps API keys are configured before running the project.
+Ensure required environment variables such as API endpoints and Google Maps API keys are properly configured before starting the application.
 
 ## Core Features
 
-* Natural-language trip planning
+* Event discovery in Las Vegas
+* User-generated event creation
 * AI-powered recommendations
 * Interactive map integration
-* Route-aware grouping
-* Itinerary builder
+* Event schedule builder
 * Export and share functionality
-* Adaptive follow-up questions only when needed
-* Prompt-driven templates for consistent vibes
+* Adaptive follow-up questions when needed
 
 ## Vision
 
-All In Vegas is designed to make discovery feel creative and exploratory while keeping results trustworthy and actionable. It combines narrative AI recommendations with structured data so users can move seamlessly from inspiration to execution.
+All In Vegas aims to centralize event discovery and management in Las Vegas while enhancing the experience with intelligent recommendations. It blends structured event data with AI-powered suggestions so users can seamlessly explore, create, and organize events in one place.
