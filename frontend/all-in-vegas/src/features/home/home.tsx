@@ -27,7 +27,7 @@ export function HomePage({ userType }: HomePageProps) {
     const upcomingEvents = filteredEvents.filter(e => !e.tags.includes('featured'));
 
     return (
-        <div className="min-h-screen bg-background pb-20">
+        <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
             <div className="pt-20 px-4 sm:px-6 lg:px-8 max-w-screen-2xl mx-auto">
 
                 {/* Hero */}
