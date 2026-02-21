@@ -22,8 +22,8 @@ public class getUserController implements RequestHandler<Map<String,Object>, Map
         Map<String, Object> response = new HashMap<>();
 
         try {
-            String userId = ((Map<String,String>) event.get("pathParameters")).get("userId");
-            User user = userService.getUser(userId);
+            String userID = ((Map<String,String>) event.get("pathParameters")).get("userId");
+            User user = userService.getUser(userID);
 
             if (user == null) {
                 response.put("statusCode", 404);
