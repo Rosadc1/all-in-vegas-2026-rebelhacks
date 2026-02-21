@@ -11,6 +11,7 @@ import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuthAlert } from "@/hooks/authAlertHook";
 import { AuthAlert } from "./authAlert";
 import { useGetUserIdByCredentialsMutation } from "@/services/user-service";
+import { LoaderCircle } from "lucide-react";
 export function Login() { 
     const nav = useNavigate();
     const [tab, setTab] = useState<"CUSTOMER" | "OPERATOR">("CUSTOMER");
@@ -35,7 +36,8 @@ export function Login() {
                 throw new Error("Invalid credentials");
             }
         } catch(e) { 
-            triggerAlert("Login Failed", `An error occurred while logging in: ${e}`);
+            const errorMessage = e instanceof Error ? e.message : "An unknown error occurred";
+            triggerAlert("Login Failed", `An error occurred while logging in: ${errorMessage}`);
         }
     }
     
@@ -69,7 +71,7 @@ export function Login() {
                 />
                 <FieldError>{formState.errors.pwd?.message}</FieldError>
             </Field>
-            <Button type="submit" className="w-full">SIGN IN</Button>
+            <Button type="submit" className="w-full" disabled={isLoading}>{isLoading && <LoaderCircle className="w-4 h-4 animate-spin"/>} SIGN IN</Button>
             <p className="text-sm text-muted-foreground text-center">
                 DON'T HAVE AN ACCOUNT? <a className="text-secondary font-bold cursor-pointer" onClick={() => nav("/" + routerMap.SIGNUP)}>SIGN UP</a>
             </p>

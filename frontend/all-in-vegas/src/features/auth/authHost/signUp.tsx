@@ -38,7 +38,8 @@ export function Signup() {
             }
 
         } catch(e) { 
-            triggerAlert("Sign Up Failed", `An error occurred while creating your account: ${e}`);
+            const errorMessage = e instanceof Error ? e.message : "An unknown error occurred";
+            triggerAlert("Sign Up Failed", `An error occurred while creating your account: ${errorMessage}`);
         }
     }
 
@@ -81,7 +82,7 @@ export function Signup() {
                 />
                 <FieldError>{formState.errors.confirmPwd?.message}</FieldError>
             </Field>
-            <Button type="submit" className="w-full" disabled={isLoading}>{isLoading && <LoaderCircle className="w-4 h-4"/>}SIGN UP</Button>
+            <Button type="submit" className="w-full" disabled={isLoading}>{isLoading && <LoaderCircle className="w-4 h-4 animate-spin"/>}SIGN UP</Button>
             <p className="text-sm text-muted-foreground text-center">
                 ALREADY A USER? <a className="text-secondary font-bold cursor-pointer" onClick={() => nav("/" + routerMap.LOGIN)}>LOGIN</a>
             </p>
