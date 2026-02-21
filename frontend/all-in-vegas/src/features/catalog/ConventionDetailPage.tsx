@@ -149,7 +149,7 @@ export function ConventionDetailPage() {
                                                     </span>
                                                     <span className="flex items-center gap-1.5">
                                                         <MapPin className="w-3.5 h-3.5 text-[#ffb703]" />
-                                                        ({venue.location.x1}, {venue.location.y1})
+                                                        ({venue.location.x}, {venue.location.y})
                                                     </span>
                                                 </div>
                                             </div>

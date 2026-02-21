@@ -34,6 +34,7 @@ export function Login() {
             if(userID) { 
                 localStorage.setItem("userID", userID);
                 setUserType(tab);
+                localStorage.setItem("use")
                 nav(routerMap.HOME);
             } else { 
                 throw new Error("Invalid credentials");

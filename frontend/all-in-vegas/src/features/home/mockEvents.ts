@@ -8,7 +8,7 @@ export const mockVenues: Venue[] = [
         title: 'Opening Keynote',
         description: "Join us for the official opening and discover what's next",
         time: '09:00 AM',
-        location: { x1: 36.1340, x2: 36.1345, y1: -115.1520, y2: -115.1515 },
+        location: { x: 36.1340, y: -115.1520 },
     },
     {
         venueID: '2',
@@ -16,7 +16,7 @@ export const mockVenues: Venue[] = [
         title: 'Innovation Showcase',
         description: 'Live demos of cutting-edge technology',
         time: '11:00 AM',
-        location: { x1: 36.1350, x2: 36.1355, y1: -115.1510, y2: -115.1505 },
+        location: { x: 36.1350, y: -115.1510 },
     },
     {
         venueID: '3',
@@ -24,7 +24,7 @@ export const mockVenues: Venue[] = [
         title: 'AI & Machine Learning',
         description: 'Deep dive into artificial intelligence applications',
         time: '01:00 PM',
-        location: { x1: 36.1360, x2: 36.1365, y1: -115.1500, y2: -115.1495 },
+        location: { x: 36.1360, y: -115.1500 },
     },
     {
         venueID: '4',
@@ -32,7 +32,7 @@ export const mockVenues: Venue[] = [
         title: 'Networking Reception',
         description: 'Connect with industry professionals',
         time: '05:00 PM',
-        location: { x1: 36.1370, x2: 36.1375, y1: -115.1490, y2: -115.1485 },
+        location: { x: 36.1370, y: -115.1490 },
     },
 ];
 
