@@ -3,7 +3,7 @@ package org.allinvegas.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import org.allinvegas.controller.postSchedulerAIController;
+import org.allinvegas.controller.postRecommendedAiController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -12,15 +12,12 @@ import java.util.Map;
 public class aiHandler implements RequestHandler<Map<String,Object>, Map<String,Object>> {
     private static final Logger logger = LoggerFactory.getLogger(aiHandler.class);
 
-    private final postSchedulerAIController postSchedulerAIController = new postSchedulerAIController();
+    private final postRecommendedAiController aiRecommendedController = new postRecommendedAiController();
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> event, Context context) {
         logger.info("Lambda function invoked.");
 
-        // Retrieve the HTTP Method
-        // GET: Get the User
-        // PATCH: Update the User attributes
         String httpMethod = (String) event.get("httpMethod");
 
         logger.info("event: " + event);
@@ -36,7 +33,7 @@ public class aiHandler implements RequestHandler<Map<String,Object>, Map<String,
 
         if (httpMethod.equals("POST")) {
             // Calls and Return the POST aiHandler
-            return postSchedulerAIController.handleRequest(event, context);
+            return aiRecommendedController.handleRequest(event, context);
         }
         else {
             return Map.of(
