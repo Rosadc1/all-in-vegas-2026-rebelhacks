@@ -9,11 +9,12 @@ import org.slf4j.LoggerFactory;
 import tools.jackson.databind.ObjectMapper;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
-public class getEventController implements RequestHandler<Map<String,Object>, Map<String,Object>> {
-    private static final Logger logger = LoggerFactory.getLogger(getEventController.class);
+public class getListEventByIDController implements RequestHandler<Map<String,Object>, Map<String,Object>> {
+    private static final Logger logger = LoggerFactory.getLogger(getListEventByIDController.class);
     private final ObjectMapper mapper = new ObjectMapper();
     private final dynamoDbEventService eventService = new dynamoDbEventService();
 
@@ -29,24 +30,28 @@ public class getEventController implements RequestHandler<Map<String,Object>, Ma
                 throw new RuntimeException("pathParameters is empty or not found");
             }
 
-            String eventID = ((Map<String, String>) event.get("pathParameters")).get("eventID");
+            String userID = ((Map<String, String>) event.get("pathParameters")).get("userID");
             logger.info("Got Path Parameters");
 
-            if (eventID == null || eventID.isEmpty()) {
-                throw new RuntimeException("eventID is empty or not found");
+            if (userID == null || userID.isEmpty()) {
+                throw new RuntimeException("userID is empty or not found");
             }
 
-            Event eventModel = eventService.getEvent(eventID);
+            List<Event> eventList = eventService.getEventsByUserId(userID);
             logger.info("Got Event from DynamoDB Service");
 
-            if (eventModel == null) {
-                throw new RuntimeException("event not found");
+            if (eventList == null || eventList.isEmpty()) {
+                response.put("statusCode", 200);
+                response.put("body", "{\"status\":200,\"message\":\"No Events found.\",\"events\":[],\"statusCode\":\"200\"}");
+                logger.warn("No events found");
+                return response;
             }
 
-            String eventMap = mapper.writeValueAsString(eventModel);
+            String eventMap = mapper.writeValueAsString(eventList);
 
-            response.put("statusCode", "200");
+            response.put("statusCode", 200);
             response.put("body", eventMap);
+
             return response;
         } catch (NoSuchElementException e) {
             logger.error(e.getMessage());
