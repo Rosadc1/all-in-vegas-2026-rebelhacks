@@ -154,3 +154,13 @@
   }
 
 }
+
+.nav-btn { 
+  @apply flex flex-col h-fit text-xs text-muted-foreground
+}   
+
+.nav-btn:hover { 
+  @apply bg-background text-secondary
+}
+
+
