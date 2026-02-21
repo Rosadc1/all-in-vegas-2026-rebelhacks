@@ -77,10 +77,10 @@ public class userHandler implements RequestHandler<Map<String, Object>, Map<Stri
 //        }
 
         if (httpMethod.equals("POST")) {
-            if (path.startsWith("/users")) {
-                return postUserController.handleRequest(event, context);
-            } else if (path.startsWith("/users/{userName}")) {
+            if (path.startsWith("/users/{userName}")) {
                 return getUserIDByUserNameController.handleRequest(event, context);
+            } else if (path.startsWith("/users")) {
+                return postUserController.handleRequest(event, context);
             } else {
                 logger.error("Invalid HTTP Method. Check API Gateway configuration.{}", event.toString());
                 throw new java.lang.IllegalArgumentException("Invalid HTTP Method. Check API Gateway configuration.");
