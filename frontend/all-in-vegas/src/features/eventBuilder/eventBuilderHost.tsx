@@ -1,7 +1,5 @@
 import { VenueMap } from "./venueMarkerForm/venueMap";
 import { EventForm, type EventFormData } from "./eventForm/eventForm";
-import { useJsApiLoader } from "@react-google-maps/api";
-import { googleMapsAPIKey } from "@/global/googleMapAPI";
 import { useState, useRef } from "react";
 import { useCreateEventMutation } from "@/services/event-service";
 import { useCreateVenueMutation } from "@/services/venue-service";
@@ -12,8 +10,6 @@ import { Button } from "@/components/ui/button";
 import { LoaderCircle } from "lucide-react";
 import type { Venue } from "@/types/venue-service-types";
 
-const GOOGLE_MAPS_LIBRARIES: ('places')[] = ['places'];
-
 export default function EventBuilderHost() {
     const [chosenLocation, setChosenLocation] = useState<{ lat: number; lng: number } | null>(null);
     const [venues, setVenues] = useState<(Omit<Venue, "venueID" | "eventID"> & {id:number})[]>([]);
@@ -21,16 +17,12 @@ export default function EventBuilderHost() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [eventLoading, setEventLoading] = useState<boolean>();
-
+    const [eventid, setEventId] = useState<string>("");
     const eventFormRef = useRef<{ getEventData: () => EventFormData | null }>(null);
     const [createEvent] = useCreateEventMutation();
     const [createVenue] = useCreateVenueMutation();
     
     const navigate = useNavigate();
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: googleMapsAPIKey,
-        libraries: GOOGLE_MAPS_LIBRARIES,
-    });
 
     const handleCreateEvent = async () => {
         try {
@@ -58,7 +50,9 @@ export default function EventBuilderHost() {
   
             if (response.status === 201) {
                 setEventCreated(true);
+                setEventId(response.eventID);
             }
+            
         } catch (err: any) {
             setError(err?.data?.message || "Failed to create event");
             console.error("Error creating event:", err);
@@ -83,12 +77,10 @@ export default function EventBuilderHost() {
                 return;
             }
 
-            const eventID = `event-${Date.now()}`; // Should match the created event ID
-
             // Create each venue
             for (const venue of venues) {
                 await createVenue({
-                    eventID,
+                    eventID: eventid,
                     title: venue.title,
                     description: venue.description,
                     time: venue.time,
@@ -105,8 +97,6 @@ export default function EventBuilderHost() {
             setIsSubmitting(false);
         }
     };
-
-    if (!isLoaded) return null;
 
     return (
             <div className="flex flex-col gap-10 pb-10">

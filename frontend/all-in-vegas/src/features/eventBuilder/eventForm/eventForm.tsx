@@ -12,6 +12,7 @@ export interface EventFormData {
     description: string;
     date: [string, string];
     location: string;
+    eventID:string,
 }
 
 interface EventFormProps {
@@ -26,6 +27,7 @@ export const EventForm = forwardRef<{ getEventData: () => EventFormData | null }
             description: '',
             date: ['', ''],
             location: '',
+            eventID: ''
         });
 
         useImperativeHandle(ref, () => ({

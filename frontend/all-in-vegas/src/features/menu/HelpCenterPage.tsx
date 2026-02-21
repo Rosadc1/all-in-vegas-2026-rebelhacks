@@ -13,7 +13,6 @@ export function HelpCenterPage() {
         <Button
           variant="ghost"
           onClick={() => navigate(-1)}
-          className="mb-6 text-[#94a3b8] hover:text-white -ml-2"
         >
           <ChevronLeft className="w-4 h-4 mr-1" />
           Back

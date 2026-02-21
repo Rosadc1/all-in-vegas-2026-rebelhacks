@@ -16,7 +16,7 @@ import { Separator } from '@/components/ui/separator';
 import { useGetEventRecommendationsMutation } from '@/services/ai-service';
 import { ChatModeSelector } from './ChatModeSelector';
 import { EventRecommendationForm } from './EventRecommendation/EventRecommendationForm';
-import { EventRecommendationPreview } from './EventRecommendation/EventRecommendationPreview';
+import { AIResponseDisplay } from './EventRecommendation/AIResponseDisplay';
 import { ScheduleBuilderForm } from './ScheduleBuilder/ScheduleBuilderForm';
 import { EventSelector } from './ScheduleBuilder/EventSelector';
 import { SchedulePreview } from './ScheduleBuilder/SchedulePreview';
@@ -32,7 +32,7 @@ interface AIChatModalProps {
   onOpenChange?: (open: boolean) => void;
 }
 
-type FormStep = 'modeSelect' | 'eventRecommendationForm' | 'eventRecommendationPreview' | 'eventSelector' | 'scheduleBuilderForm' | 'schedulePreview';
+type FormStep = 'modeSelect' | 'eventRecommendationForm' | 'eventRecommendationResponse' | 'eventSelector' | 'scheduleBuilderForm' | 'schedulePreview';
 
 export function AIChatModal({
   isOpen,
@@ -45,11 +45,10 @@ export function AIChatModal({
   const [isLoading, setIsLoading] = useState(false);
 
   // Event Recommendation state
-  const [recommendedEvents, setRecommendedEvents] = useState<Event[]>([]);
+  const [aiResponse, setAiResponse] = useState<string>('');
 
   // Schedule Builder state
   const [selectedScheduleEvents, setSelectedScheduleEvents] = useState<Event[]>([]);
-  const [allAvailableEvents, setAllAvailableEvents] = useState<Event[]>([]);
   const [generatedSchedule, setGeneratedSchedule] = useState<ScheduleItem[]>([]);
 
   const handleModeChange = (newMode: ChatMode) => {
@@ -57,7 +56,7 @@ export function AIChatModal({
     setFormStep('modeSelect');
     // Reset relevant state when switching modes
     if (newMode === 'recommendation') {
-      setRecommendedEvents([]);
+      setAiResponse('');
     } else {
       setSelectedScheduleEvents([]);
       setGeneratedSchedule([]);
@@ -70,7 +69,7 @@ export function AIChatModal({
     // Reset state on close
     setTimeout(() => {
       setFormStep('modeSelect');
-      setRecommendedEvents([]);
+      setAiResponse('');
       setSelectedScheduleEvents([]);
       setGeneratedSchedule([]);
       setIsLoading(false);
@@ -81,20 +80,8 @@ export function AIChatModal({
     setIsLoading(true);
     try {
       const response = await getEventRecommendations({ prompt: data.prompt }).unwrap();
-      
-      // Convert recommended event names to Event objects with placeholder data
-      const events: Event[] = response.Recommended.map((name, index) => ({
-        eventID: `recommended-${index}`,
-        userId: 'ai-recommendation',
-        title: name,
-        description: 'AI Recommended Event',
-        date: [],
-        location: 'Las Vegas, Nevada',
-        tag: ['recommended'],
-      }));
-      
-      setRecommendedEvents(events);
-      setFormStep('eventRecommendationPreview');
+      setAiResponse(response.response);
+      setFormStep('eventRecommendationResponse');
     } catch (error) {
       console.error('Error getting recommendations:', error);
     } finally {
@@ -102,11 +89,11 @@ export function AIChatModal({
     }
   };
 
-  const handleScheduleBuilderSubmit = async (data: ScheduleBuilderFormData) => {
+  const handleScheduleBuilderSubmit = async (_data: ScheduleBuilderFormData) => {
     setIsLoading(true);
     try {
       // TODO: Call AI API to generate schedule
-      // const response = await aiChatService.generateSchedule(data);
+      // const response = await aiChatService.generateSchedule(_data);
       // setGeneratedSchedule(response.schedule);
       
       // Placeholder: mock data
@@ -119,18 +106,6 @@ export function AIChatModal({
     }
   };
 
-  const handleSelectEventFromRecommendation = (eventId: string) => {
-    const event = recommendedEvents.find((e) => e.eventID === eventId);
-    if (event) {
-      setSelectedScheduleEvents((prev) => {
-        const exists = prev.find((e) => e.eventID === eventId);
-        if (exists) {
-          return prev.filter((e) => e.eventID !== eventId);
-        }
-        return [...prev, event];
-      });
-    }
-  };
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
@@ -184,26 +159,13 @@ export function AIChatModal({
               />
             )}
 
-            {mode === 'recommendation' && formStep === 'eventRecommendationPreview' && (
-              <div className="space-y-4">
-                <EventRecommendationPreview
-                  events={recommendedEvents}
-                  isLoading={isLoading}
-                  onSelectEvent={handleSelectEventFromRecommendation}
-                  onStartOver={() => setFormStep('eventRecommendationForm')}
-                />
-                {selectedScheduleEvents.length > 0 && (
-                  <Button
-                    onClick={() => {
-                      setMode('schedule');
-                      setFormStep('eventSelector');
-                    }}
-                    className="w-full"
-                  >
-                    Build Schedule with Selected Events ({selectedScheduleEvents.length})
-                  </Button>
-                )}
-              </div>
+            {mode === 'recommendation' && formStep === 'eventRecommendationResponse' && (
+              <AIResponseDisplay
+                response={aiResponse}
+                isLoading={isLoading}
+                onStartOver={() => setFormStep('eventRecommendationForm')}
+                onProceed={() => setFormStep('modeSelect')}
+              />
             )}
 
             {/* Schedule Builder Flow */}
@@ -222,11 +184,11 @@ export function AIChatModal({
             {mode === 'schedule' && formStep === 'eventSelector' && (
               <div className="space-y-4">
                 <EventSelector
-                  availableEvents={allAvailableEvents}
+                  availableEvents={[]}
                   selectedEventIds={selectedScheduleEvents.map((e) => e.eventID)}
                   onSelectionChange={(eventIds) => {
                     setSelectedScheduleEvents(
-                      allAvailableEvents.filter((e) =>
+                      [].filter((e: Event) =>
                         eventIds.includes(e.eventID)
                       )
                     );
@@ -265,10 +227,10 @@ export function AIChatModal({
 
         {/* Navigation */}
         {formStep !== 'modeSelect' && (
-          <div className="flex-shrink-0 border-t pt-4 px-6">
+          <div className="shrink-0 border-t pt-4 px-6">
             <Button
               onClick={() => {
-                if (mode === 'recommendation' && formStep === 'eventRecommendationPreview') {
+                if (mode === 'recommendation' && formStep === 'eventRecommendationResponse') {
                   setFormStep('eventRecommendationForm');
                 } else if (mode === 'schedule' && formStep === 'scheduleBuilderForm') {
                   setFormStep('eventSelector');
