@@ -7,13 +7,11 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="venueLambda" />
+        <module name="user-Lambda" />
         <module name="eventLambda" />
         <module name="aiLambda" />
         <module name="userLambda" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel>
-      <module name="user-Lambda" target="21" />
-    </bytecodeTargetLevel>
   </component>
 </project>
