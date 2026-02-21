@@ -8,12 +8,24 @@ export interface SavedEntry {
     event: CatalogEvent;
 }
 
+export interface CreatedEvent {
+    id: string;
+    title: string;
+    description: string;
+    startDate: string;
+    endDate: string;
+    location: { lat: number; lng: number } | null;
+}
+
 interface AppContextType {
     userType: userType | null;
     setUserType: (type: userType | null) => void;
     savedVenues: Map<string, SavedEntry>;
     toggleSaveVenue: (venue: Venue, event: CatalogEvent) => void;
     isVenueSaved: (venueId: string) => boolean;
+    createdEvents: CreatedEvent[];
+    addCreatedEvent: (event: CreatedEvent) => void;
+    removeCreatedEvent: (id: string) => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -37,11 +49,30 @@ function persistSavedVenues(venues: Map<string, SavedEntry>) {
     localStorage.setItem(`savedVenues_${userID}`, JSON.stringify(Array.from(venues.entries())));
 }
 
+function loadCreatedEvents(): CreatedEvent[] {
+    const userID = localStorage.getItem('userID');
+    if (!userID) return [];
+    try {
+        const raw = localStorage.getItem(`createdEvents_${userID}`);
+        if (!raw) return [];
+        return JSON.parse(raw);
+    } catch {
+        return [];
+    }
+}
+
+function persistCreatedEvents(events: CreatedEvent[]) {
+    const userID = localStorage.getItem('userID');
+    if (!userID) return;
+    localStorage.setItem(`createdEvents_${userID}`, JSON.stringify(events));
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
     const [userType, setUserTypeState] = useState<userType | null>(
         () => localStorage.getItem('userType') as userType | null
     );
     const [savedVenues, setSavedVenues] = useState<Map<string, SavedEntry>>(loadSavedVenues);
+    const [createdEvents, setCreatedEvents] = useState<CreatedEvent[]>(loadCreatedEvents);
 
     const setUserType = (type: userType | null) => {
         setUserTypeState(type);
@@ -67,8 +98,24 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
     const isVenueSaved = (venueId: string) => savedVenues.has(venueId);
 
+    const addCreatedEvent = (event: CreatedEvent) => {
+        setCreatedEvents(prev => {
+            const next = [...prev, event];
+            persistCreatedEvents(next);
+            return next;
+        });
+    };
+
+    const removeCreatedEvent = (id: string) => {
+        setCreatedEvents(prev => {
+            const next = prev.filter(e => e.id !== id);
+            persistCreatedEvents(next);
+            return next;
+        });
+    };
+
     return (
-        <AppContext.Provider value={{ userType, setUserType, savedVenues, toggleSaveVenue, isVenueSaved }}>
+        <AppContext.Provider value={{ userType, setUserType, savedVenues, toggleSaveVenue, isVenueSaved, createdEvents, addCreatedEvent, removeCreatedEvent }}>
             {children}
         </AppContext.Provider>
     );

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useAppContext } from '@/context/AppContext';
 import { useNavigate } from 'react-router';
-import type { SavedEntry } from '@/context/AppContext';
+import type { SavedEntry, CreatedEvent } from '@/context/AppContext';
 
 const DAY_LABELS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const MONTH_NAMES = [
@@ -15,37 +15,14 @@ const MONTH_NAMES = [
 ];
 
 export function CalendarPage() {
-    const { savedVenues, toggleSaveVenue, userType } = useAppContext();
+    const { savedVenues, toggleSaveVenue, userType, createdEvents, removeCreatedEvent } = useAppContext();
     const navigate = useNavigate();
-
-    if (!userType) {
-        return (
-            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-4">
-                <Calendar className="w-16 h-16 text-muted-foreground opacity-20" />
-                <h2 className="text-2xl font-black text-foreground uppercase tracking-tight">Your Schedule</h2>
-                <p className="text-muted-foreground text-sm text-center max-w-sm">
-                    Log in to save sessions and build your personal convention schedule.
-                </p>
-                <div className="flex gap-3 mt-2">
-                    <Button onClick={() => navigate('/login')} variant="outline" className="font-bold uppercase tracking-wider">
-                        Log In
-                    </Button>
-                    <Button onClick={() => navigate('/signUp')} className="font-bold uppercase tracking-wider shadow-lg shadow-primary/50">
-                        Sign Up
-                    </Button>
-                </div>
-            </div>
-        );
-    }
 
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [selectedDay, setSelectedDay] = useState<number | null>(null);
 
-    const savedEntries: SavedEntry[] = Array.from(savedVenues.values());
-
-    // Calendar grid: array of day numbers (or null for padding)
     const calendarDays = useMemo(() => {
         const firstDayOfWeek = new Date(currentYear, currentMonth, 1).getDay();
         const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
@@ -56,32 +33,8 @@ export function CalendarPage() {
         return days;
     }, [currentMonth, currentYear]);
 
-    // Returns saved entries whose parent event spans the given day
-    const getEntriesForDay = (day: number): SavedEntry[] => {
-        const date = new Date(currentYear, currentMonth, day);
-        date.setHours(12, 0, 0, 0);
-        return savedEntries.filter(({ event }) => {
-            const start = new Date(event.startDate);
-            const end = new Date(event.endDate);
-            start.setHours(0, 0, 0, 0);
-            end.setHours(23, 59, 59, 999);
-            return date >= start && date <= end;
-        });
-    };
+    const savedEntries: SavedEntry[] = Array.from(savedVenues.values());
 
-    const prevMonth = () => {
-        if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
-        else setCurrentMonth(m => m - 1);
-        setSelectedDay(null);
-    };
-
-    const nextMonth = () => {
-        if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
-        else setCurrentMonth(m => m + 1);
-        setSelectedDay(null);
-    };
-
-    // Timeline: group saved venues by parent event, sorted by event start date
     const timelineGroups = useMemo(() => {
         const groups = new Map<string, { eventId: string; eventTitle: string; eventLocation: string; startDate: string; endDate: string; category: string; venues: SavedEntry[] }>();
         for (const entry of savedEntries) {
@@ -104,6 +57,224 @@ export function CalendarPage() {
         );
     }, [savedEntries]);
 
+    const prevMonth = () => {
+        if (currentMonth === 0) { setCurrentMonth(11); setCurrentYear(y => y - 1); }
+        else setCurrentMonth(m => m - 1);
+        setSelectedDay(null);
+    };
+
+    const nextMonth = () => {
+        if (currentMonth === 11) { setCurrentMonth(0); setCurrentYear(y => y + 1); }
+        else setCurrentMonth(m => m + 1);
+        setSelectedDay(null);
+    };
+
+    const getCreatedEventsForDay = (day: number): CreatedEvent[] => {
+        const date = new Date(currentYear, currentMonth, day);
+        date.setHours(12, 0, 0, 0);
+        return createdEvents.filter(event => {
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+            return date >= start && date <= end;
+        });
+    };
+
+    const getEntriesForDay = (day: number): SavedEntry[] => {
+        const date = new Date(currentYear, currentMonth, day);
+        date.setHours(12, 0, 0, 0);
+        return savedEntries.filter(({ event }) => {
+            const start = new Date(event.startDate);
+            const end = new Date(event.endDate);
+            start.setHours(0, 0, 0, 0);
+            end.setHours(23, 59, 59, 999);
+            return date >= start && date <= end;
+        });
+    };
+
+    if (!userType) {
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-4">
+                <Calendar className="w-16 h-16 text-muted-foreground opacity-20" />
+                <h2 className="text-2xl font-black text-foreground uppercase tracking-tight">Your Schedule</h2>
+                <p className="text-muted-foreground text-sm text-center max-w-sm">
+                    Log in to save sessions and build your personal convention schedule.
+                </p>
+                <div className="flex gap-3 mt-2">
+                    <Button onClick={() => navigate('/login')} variant="outline" className="font-bold uppercase tracking-wider">
+                        Log In
+                    </Button>
+                    <Button onClick={() => navigate('/signUp')} className="font-bold uppercase tracking-wider shadow-lg shadow-primary/50">
+                        Sign Up
+                    </Button>
+                </div>
+            </div>
+        );
+    }
+
+    if (userType === 'OPERATOR') {
+        const selectedDayEvents = selectedDay !== null ? getCreatedEventsForDay(selectedDay) : [];
+
+        return (
+            <div className="min-h-screen bg-background pb-20">
+                <div className="pt-20 px-4 sm:px-6 lg:px-8 max-w-screen-2xl mx-auto">
+                    <div className="mb-8">
+                        <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-black mb-1 block">Operator</span>
+                        <h1 className="text-4xl font-black text-foreground uppercase tracking-tight">My Events</h1>
+                        <div className="h-1 w-20 bg-secondary mt-2 mb-4" />
+                        <p className="text-muted-foreground text-sm font-medium uppercase tracking-wide">
+                            Events you've created and their schedules.
+                        </p>
+                    </div>
+
+                    {createdEvents.length === 0 ? (
+                        <div className="text-center py-24 bg-card/50 rounded-2xl border border-dashed border-border">
+                            <Calendar className="w-16 h-16 text-muted-foreground mx-auto mb-4 opacity-20" />
+                            <p className="text-muted-foreground text-lg font-black uppercase tracking-widest mb-2">No events created yet</p>
+                            <p className="text-muted-foreground text-sm">Go to Catalog to create your first event.</p>
+                        </div>
+                    ) : (
+                        <div className="grid lg:grid-cols-[1fr_380px] gap-8 items-start">
+
+                            {/* Calendar grid */}
+                            <div className="bg-card rounded-2xl border border-border overflow-hidden">
+                                <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+                                    <button onClick={prevMonth} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                                        <ChevronLeft className="w-5 h-5 text-foreground" />
+                                    </button>
+                                    <h2 className="text-xl font-black text-foreground uppercase tracking-tight">
+                                        {MONTH_NAMES[currentMonth]} {currentYear}
+                                    </h2>
+                                    <button onClick={nextMonth} className="p-2 hover:bg-muted rounded-lg transition-colors">
+                                        <ChevronRight className="w-5 h-5 text-foreground" />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-7 border-b border-border/50">
+                                    {DAY_LABELS.map(d => (
+                                        <div key={d} className="py-2 text-center text-[10px] font-black text-muted-foreground uppercase tracking-widest">{d}</div>
+                                    ))}
+                                </div>
+
+                                <div className="grid grid-cols-7">
+                                    {calendarDays.map((day, idx) => {
+                                        if (day === null) return (
+                                            <div key={`pad-${idx}`} className={`min-h-[88px] border-b border-border/20 ${(idx + 1) % 7 !== 0 ? 'border-r' : ''}`} />
+                                        );
+                                        const dayEvents = getCreatedEventsForDay(day);
+                                        const hasEvents = dayEvents.length > 0;
+                                        const isToday = day === today.getDate() && currentMonth === today.getMonth() && currentYear === today.getFullYear();
+                                        const isSelected = day === selectedDay;
+                                        return (
+                                            <motion.div
+                                                key={day}
+                                                onClick={() => hasEvents && setSelectedDay(isSelected ? null : day)}
+                                                whileHover={hasEvents ? { backgroundColor: 'hsl(var(--muted)/0.4)' } : {}}
+                                                className={`min-h-[88px] p-2 border-b border-border/20 transition-colors relative select-none ${(idx + 1) % 7 !== 0 ? 'border-r' : ''} ${hasEvents ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/8' : ''}`}
+                                            >
+                                                <div className={`w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold mb-1 mx-auto ${isToday ? 'bg-secondary text-secondary-foreground' : ''} ${isSelected && !isToday ? 'bg-primary text-primary-foreground' : ''} ${!isToday && !isSelected ? 'text-foreground' : ''}`}>
+                                                    {day}
+                                                </div>
+                                                {hasEvents && (
+                                                    <div className="space-y-0.5">
+                                                        {dayEvents.slice(0, 2).map(event => (
+                                                            <div key={event.id} className="text-[8px] font-bold text-primary bg-primary/10 rounded px-1 py-0.5 truncate leading-tight">
+                                                                {event.title}
+                                                            </div>
+                                                        ))}
+                                                        {dayEvents.length > 2 && (
+                                                            <div className="text-[8px] font-bold text-muted-foreground px-1">+{dayEvents.length - 2} more</div>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </motion.div>
+                                        );
+                                    })}
+                                </div>
+
+                                <AnimatePresence>
+                                    {selectedDay !== null && selectedDayEvents.length > 0 && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            transition={{ duration: 0.2 }}
+                                            className="overflow-hidden border-t border-border bg-muted/20"
+                                        >
+                                            <div className="p-5">
+                                                <h3 className="text-xs font-black text-foreground uppercase tracking-tight mb-3">
+                                                    {MONTH_NAMES[currentMonth]} {selectedDay} — Events
+                                                </h3>
+                                                <div className="space-y-2">
+                                                    {selectedDayEvents.map(event => (
+                                                        <div key={event.id} className="flex items-center gap-3 p-3 bg-card rounded-lg border border-border">
+                                                            <div className="w-0.5 h-8 bg-secondary rounded-full shrink-0" />
+                                                            <div className="flex-1 min-w-0">
+                                                                <p className="text-xs font-black text-foreground uppercase truncate">{event.title}</p>
+                                                                <p className="text-[10px] text-muted-foreground font-bold uppercase">{event.description}</p>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Sidebar list */}
+                            <div className="sticky top-20">
+                                <div className="flex items-center justify-between mb-4">
+                                    <h2 className="text-lg font-black text-foreground uppercase tracking-tight">Created Events</h2>
+                                    <Badge variant="outline" className="border-secondary text-secondary font-bold text-[10px]">
+                                        {createdEvents.length} events
+                                    </Badge>
+                                </div>
+                                <ScrollArea className="h-[calc(100vh-14rem)]">
+                                    <div className="space-y-4 pr-2">
+                                        {createdEvents.map(event => (
+                                            <motion.div
+                                                key={event.id}
+                                                whileHover={{ x: 4 }}
+                                                className="p-4 bg-card rounded-xl border border-border hover:border-secondary transition-colors group relative overflow-hidden"
+                                            >
+                                                <div className="absolute left-0 top-0 bottom-0 w-0.5 bg-primary" />
+                                                <div className="pl-3">
+                                                    <p className="text-xs font-black text-foreground uppercase truncate mb-1">{event.title}</p>
+                                                    <p className="text-[10px] text-muted-foreground line-clamp-2 mb-2">{event.description}</p>
+                                                    <div className="flex items-center gap-1 text-[10px] font-bold text-secondary uppercase">
+                                                        <Clock className="w-3 h-3" />
+                                                        {new Date(event.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                                        {' – '}
+                                                        {new Date(event.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                                    </div>
+                                                    {event.location && (
+                                                        <div className="flex items-center gap-1 text-[10px] font-bold text-muted-foreground uppercase mt-1">
+                                                            <MapPin className="w-3 h-3" />
+                                                            {event.location.lat.toFixed(4)}, {event.location.lng.toFixed(4)}
+                                                        </div>
+                                                    )}
+                                                    <button
+                                                        onClick={() => removeCreatedEvent(event.id)}
+                                                        className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity"
+                                                    >
+                                                        <BookmarkX className="w-4 h-4 text-muted-foreground hover:text-destructive transition-colors" />
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+        );
+    }
+
+    // CUSTOMER view
     const selectedDayEntries = selectedDay !== null ? getEntriesForDay(selectedDay) : [];
 
     return (
@@ -190,8 +361,6 @@ export function CalendarPage() {
                                         currentMonth === today.getMonth() &&
                                         currentYear === today.getFullYear();
                                     const isSelected = day === selectedDay;
-
-                                    // Collect unique event titles for dots
                                     const uniqueEvents = [...new Map(dayEntries.map(e => [e.event.id, e.event])).values()];
 
                                     return (
@@ -205,7 +374,6 @@ export function CalendarPage() {
                                                 ${isSelected ? 'bg-primary/8' : ''}
                                             `}
                                         >
-                                            {/* Day number */}
                                             <div className={`w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold mb-1 mx-auto
                                                 ${isToday ? 'bg-secondary text-secondary-foreground' : ''}
                                                 ${isSelected && !isToday ? 'bg-primary text-primary-foreground' : ''}
@@ -214,7 +382,6 @@ export function CalendarPage() {
                                                 {day}
                                             </div>
 
-                                            {/* Event pills */}
                                             {hasEntries && (
                                                 <div className="space-y-0.5">
                                                     {uniqueEvents.slice(0, 2).map(event => (
@@ -291,12 +458,10 @@ export function CalendarPage() {
                                     {timelineGroups.map((group, groupIdx) => (
                                         <div key={group.eventId} className="relative">
 
-                                            {/* Vertical connector line */}
                                             {groupIdx < timelineGroups.length - 1 && (
                                                 <div className="absolute left-[5px] top-8 bottom-[-2rem] w-px bg-border" />
                                             )}
 
-                                            {/* Event header row */}
                                             <div className="flex items-start gap-3 mb-3">
                                                 <div className="w-3 h-3 rounded-full bg-secondary shrink-0 mt-1 ring-2 ring-background" />
                                                 <div className="flex-1 min-w-0">
@@ -313,7 +478,6 @@ export function CalendarPage() {
                                                 </div>
                                             </div>
 
-                                            {/* Venue cards */}
                                             <div className="ml-6 space-y-2">
                                                 {group.venues.map(({ venue, event }) => (
                                                     <motion.div
