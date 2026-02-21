@@ -12,9 +12,7 @@ export function ImageWithFallback({ src, alt, className }: ImageWithFallbackProp
 
     if (!src || errored) {
         return (
-            <div className={cn('flex items-end justify-start bg-gradient-to-br from-card via-muted to-background', className)}>
-                <span className="p-4 text-xs font-bold uppercase tracking-widest text-muted-foreground">{alt}</span>
-            </div>
+            <div className={cn('bg-gradient-to-br from-card via-muted to-background', className)} />
         );
     }
 
