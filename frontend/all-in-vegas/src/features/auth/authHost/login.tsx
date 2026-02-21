@@ -6,16 +6,26 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router";
 import { Button } from "@/components/ui/button";
 import { routerMap } from "@/global/routerMap";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function Login() { 
     const nav = useNavigate();
     const [tab, setTab] = useState<"ATTENDEE" | "ORGANIZER">("ATTENDEE");
-
     const { handleSubmit, register, formState } = useForm<UserLoginData>({
         resolver: zodResolver(userLoginSchema)
     });
+    /*
+    const loginUser = async (data:UserLoginData) => { 
+        try { 
+            
+        } catch() { 
+
+        } finally { 
+
+        }
+    }
+    */
 
     return(
         <form

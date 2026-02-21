@@ -7,6 +7,7 @@ import org.allinvegas.controller.deleteUserController;
 import org.allinvegas.controller.getUserController;
 import org.allinvegas.controller.postUserController;
 import org.allinvegas.controller.updateUserController;
+import org.allinvegas.controller.getUserIDByUserNameController;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,6 +21,7 @@ public class userHandler implements RequestHandler<Map<String,Object>, Map<Strin
     private final updateUserController updateUserController = new updateUserController();
     private final postUserController postUserController = new postUserController();
     private final deleteUserController deleteUserController = new deleteUserController();
+    private final getUserIDByUserNameController getUserIDByUserNameController = new getUserIDByUserNameController();
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> event, Context context) {
@@ -29,6 +31,7 @@ public class userHandler implements RequestHandler<Map<String,Object>, Map<Strin
         // GET: Get the User
         // PATCH: Update the User attributes
         String httpMethod = (String) event.get("httpMethod");
+        String path = (String)event.get("path");
 
         logger.info("event: " + event);
         logger.info("Context: " + context.toString());
@@ -38,6 +41,14 @@ public class userHandler implements RequestHandler<Map<String,Object>, Map<Strin
             return Map.of(
                     "statusCode", 400,
                     "body", "{\"status\":400,\"message\":\"Bad Request: HTTP method not supplied.\"}"
+            );
+        }
+
+        if (path == null) {
+            logger.error("path is missing in the Lambda event. Check API Gateway configuration.{}", event.toString());
+            return Map.of(
+                    "statusCode", 400,
+                    "body", "{\"status\":400,\"message\":\"Bad Request: Path not supplied.\"}"
             );
         }
 

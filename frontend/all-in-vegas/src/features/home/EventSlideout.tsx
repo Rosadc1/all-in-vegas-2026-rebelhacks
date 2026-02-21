@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion } from 'motion/react';
-import { X, Calendar, MapPin, Users, Bookmark, BookmarkCheck, ChevronRight, Clock } from 'lucide-react';
+import { X, Calendar, MapPin, Bookmark, BookmarkCheck, ChevronRight, Clock } from 'lucide-react';
 import type { Event } from '@/types/event-service-types';
 import type { userType } from '@/types/user-service-types';
 import { Button } from '@/components/ui/button';
@@ -8,16 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ImageWithFallback } from '@/components/image/ImageWithFallback';
-
-interface Session {
-    id: string;
-    title: string;
-    description: string;
-    time: string;
-    duration: string;
-    speaker: string;
-    location: string;
-}
+import { mockVenues } from './mockEvents';
 
 interface EventSlideoutProps {
     event: Event;
@@ -25,50 +16,11 @@ interface EventSlideoutProps {
     userType?: userType | null;
 }
 
-const mockSessions: Session[] = [
-    {
-        id: '1',
-        title: 'Opening Keynote',
-        description: "Join us for the official opening and discover what's next",
-        time: '09:00 AM',
-        duration: '90 min',
-        speaker: 'Dr. Sarah Chen',
-        location: 'Main Hall',
-    },
-    {
-        id: '2',
-        title: 'Innovation Showcase',
-        description: 'Live demos of cutting-edge technology',
-        time: '11:00 AM',
-        duration: '60 min',
-        speaker: 'Tech Leaders Panel',
-        location: 'Innovation Stage',
-    },
-    {
-        id: '3',
-        title: 'AI & Machine Learning',
-        description: 'Deep dive into artificial intelligence applications',
-        time: '01:00 PM',
-        duration: '120 min',
-        speaker: 'Dr. Michael Ross',
-        location: 'AI Summit',
-    },
-    {
-        id: '4',
-        title: 'Networking Reception',
-        description: 'Connect with industry professionals',
-        time: '05:00 PM',
-        duration: '120 min',
-        speaker: 'All Attendees',
-        location: 'Grand Ballroom',
-    },
-];
-
 export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) {
     const [isSaved, setIsSaved] = useState(false);
-    const [savedSessions, setSavedSessions] = useState<Set<string>>(new Set());
+    const [savedVenues, setSavedVenues] = useState<Set<string>>(new Set());
 
-    const displayTags = event.tags.filter(t => t !== 'featured');
+    const displayTags = event.tag.filter(t => t !== 'featured');
     const categoryTag = displayTags[0];
     const startDate = event.date[0] ? new Date(event.date[0]) : null;
     const endDate = event.date[1] ? new Date(event.date[1]) : null;
@@ -81,17 +33,17 @@ export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) 
         setIsSaved(!isSaved);
     };
 
-    const handleSaveSession = (sessionId: string) => {
+    const handleSaveVenue = (venueId: string) => {
         if (!userType) {
-            alert('Please login to save sessions');
+            alert('Please login to save venues');
             return;
         }
-        setSavedSessions(prev => {
+        setSavedVenues(prev => {
             const next = new Set(prev);
-            if (next.has(sessionId)) {
-                next.delete(sessionId);
+            if (next.has(venueId)) {
+                next.delete(venueId);
             } else {
-                next.add(sessionId);
+                next.add(venueId);
             }
             return next;
         });
@@ -227,9 +179,9 @@ export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) 
                                 {/* Schedule */}
                                 <TabsContent value="schedule" className="mt-6 space-y-4">
                                     <h3 className="text-lg font-black text-foreground uppercase tracking-tight">Event Schedule</h3>
-                                    {mockSessions.map((session) => (
+                                    {mockVenues.map((venue) => (
                                         <motion.div
-                                            key={session.id}
+                                            key={venue.venueID}
                                             whileHover={{ x: 4 }}
                                             className="p-4 bg-card rounded-lg border border-border hover:border-secondary transition-colors"
                                         >
@@ -238,24 +190,20 @@ export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) 
                                                     <div className="flex items-center gap-2 mb-2">
                                                         <Badge variant="outline" className="border-secondary text-secondary font-bold text-[10px]">
                                                             <Clock className="w-3 h-3 mr-1" />
-                                                            {session.time}
-                                                        </Badge>
-                                                        <Badge variant="outline" className="border-border text-muted-foreground font-bold text-[10px]">
-                                                            {session.duration}
+                                                            {venue.time}
                                                         </Badge>
                                                     </div>
-                                                    <h4 className="font-black text-foreground mb-1 uppercase tracking-tight">{session.title}</h4>
-                                                    <p className="text-xs text-muted-foreground mb-2">{session.description}</p>
+                                                    <h4 className="font-black text-foreground mb-1 uppercase tracking-tight">{venue.title}</h4>
+                                                    <p className="text-xs text-muted-foreground mb-2">{venue.description}</p>
                                                     <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                                        <span className="flex items-center gap-1"><Users className="w-3 h-3" />{session.speaker}</span>
-                                                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{session.location}</span>
+                                                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{venue.location.x1}, {venue.location.y1}</span>
                                                     </div>
                                                 </div>
                                                 <button
-                                                    onClick={() => handleSaveSession(session.id)}
+                                                    onClick={() => handleSaveVenue(venue.venueID)}
                                                     className="p-2 hover:bg-muted rounded-lg transition-colors shrink-0"
                                                 >
-                                                    {savedSessions.has(session.id)
+                                                    {savedVenues.has(venue.venueID)
                                                         ? <BookmarkCheck className="w-5 h-5 text-secondary" />
                                                         : <Bookmark className="w-5 h-5 text-muted-foreground" />
                                                     }

@@ -1,30 +1,29 @@
 import { useState } from 'react';
 import { Search, Filter, TrendingUp, Calendar as CalendarIcon, MapPin } from 'lucide-react';
-import { motion, AnimatePresence } from 'motion/react';
-import type { Event } from '@/types/event-service-types';
+import { motion } from 'motion/react';
 import type { userType } from '@/types/user-service-types';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ImageWithFallback } from '@/components/image/ImageWithFallback';
-import { EventSlideout } from './EventSlideout';
+import { useNavigate } from 'react-router';
 import { mockEvents } from './mockEvents';
 
 interface HomePageProps {
     userType?: userType | null;
 }
 
-export function HomePage({ userType }: HomePageProps) {
+export function HomePage({ userType: _userType }: HomePageProps) {
     const [searchQuery, setSearchQuery] = useState('');
-    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
+    const navigate = useNavigate();
 
     const filteredEvents = mockEvents.filter(event =>
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         event.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        event.tags.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
+        event.tag.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()))
     );
 
-    const featuredEvents = filteredEvents.filter(e => e.tags.includes('featured'));
-    const upcomingEvents = filteredEvents.filter(e => !e.tags.includes('featured'));
+    const featuredEvents = filteredEvents.filter(e => e.tag.includes('featured'));
+    const upcomingEvents = filteredEvents.filter(e => !e.tag.includes('featured'));
 
     return (
         <div className="min-h-screen bg-background pb-20 overflow-x-hidden">
@@ -71,13 +70,13 @@ export function HomePage({ userType }: HomePageProps) {
                         </div>
                         <div className="grid md:grid-cols-2 gap-6">
                             {featuredEvents.map((event) => {
-                                const displayTag = event.tags.find(t => t !== 'featured') ?? event.tags[0];
+                                const displayTag = event.tag.find(t => t !== 'featured') ?? event.tag[0];
                                 return (
                                     <motion.div
                                         key={event.eventID}
                                         whileHover={{ scale: 1.01 }}
                                         whileTap={{ scale: 0.99 }}
-                                        onClick={() => setSelectedEvent(event)}
+                                        onClick={() => navigate(`/catalog/convention/${event.eventID}`)}
                                         className="bg-card rounded-xl overflow-hidden cursor-pointer border border-border hover:border-secondary transition-all group relative"
                                     >
                                         <div className="absolute top-0 left-0 w-1 h-full bg-primary z-10" />
@@ -121,13 +120,13 @@ export function HomePage({ userType }: HomePageProps) {
                     <h2 className="text-2xl font-black text-foreground mb-4 uppercase tracking-tight">All Events</h2>
                     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {upcomingEvents.map((event) => {
-                            const displayTag = event.tags[0];
+                            const displayTag = event.tag[0];
                             return (
                                 <motion.div
                                     key={event.eventID}
                                     whileHover={{ y: -4 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => setSelectedEvent(event)}
+                                    onClick={() => navigate(`/catalog/convention/${event.eventID}`)}
                                     className="bg-card rounded-xl overflow-hidden cursor-pointer border border-border hover:border-secondary transition-all"
                                 >
                                     <div className="relative h-48 overflow-hidden">
@@ -165,16 +164,6 @@ export function HomePage({ userType }: HomePageProps) {
                 </div>
             </div>
 
-            {/* Event Slideout */}
-            <AnimatePresence>
-                {selectedEvent && (
-                    <EventSlideout
-                        event={selectedEvent}
-                        onClose={() => setSelectedEvent(null)}
-                        userType={userType}
-                    />
-                )}
-            </AnimatePresence>
         </div>
     );
 }
