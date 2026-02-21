@@ -5,15 +5,12 @@ import { googleMapsAPIKey } from "@/global/googleMapAPI";
 import { useState, useRef } from "react";
 import { useCreateEventMutation } from "@/services/event-service";
 import { useCreateVenueMutation } from "@/services/venue-service";
-import { useAppContext } from "@/context/AppContext";
 import { useNavigate } from "react-router";
 import { routerMap } from "@/global/routerMap";
 import { Button } from "@/components/ui/button";
 
 import { LoaderCircle } from "lucide-react";
 import type { Venue } from "@/types/venue-service-types";
-
-const libraries: Libraries = ["places"];
 
 export default function EventBuilderHost() {
     const [chosenLocation, setChosenLocation] = useState<{ lat: number; lng: number } | null>(null);
@@ -104,7 +101,6 @@ export default function EventBuilderHost() {
     };
 
     return (
-        <LoadScript googleMapsApiKey={googleMapsAPIKey} libraries={libraries}>
             <div className="flex flex-col gap-10 pb-10">
                 {error && (
                     <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded z-50">
@@ -161,6 +157,5 @@ export default function EventBuilderHost() {
                     </>
                 )}
             </div>
-        </LoadScript>
     );
 }

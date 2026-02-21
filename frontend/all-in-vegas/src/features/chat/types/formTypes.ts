@@ -9,10 +9,6 @@ import type { Event } from '@/types/event-service-types';
  */
 export interface EventRecommendationFormInputs {
   prompt: string;
-  budget?: number;
-  dateRangeStart?: string;
-  dateRangeEnd?: string;
-  preferences?: string[];
 }
 
 /**
