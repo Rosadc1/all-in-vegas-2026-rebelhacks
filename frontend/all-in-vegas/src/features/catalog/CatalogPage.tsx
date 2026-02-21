@@ -8,11 +8,12 @@ import { useSearchParams, useNavigate } from 'react-router';
 import { ImageWithFallback } from '@/components/image/ImageWithFallback';
 import { catalogEvents, catalogVenues } from './mockData';
 import { useAppContext } from '@/context/AppContext';
+import EventBuilderHost from '@/features/eventBuilder/eventBuilderHost';
 
 const categories = ['All', 'Technology', 'Fashion', 'Construction', 'Media', 'Automotive'];
 
 interface CatalogPageProps {
-    userType?: 'org' | 'customer' | null;
+    userType?: 'operator' | 'customer' | null;
 }
 
 export function CatalogPage({ userType: _userType }: CatalogPageProps) {
@@ -48,6 +49,11 @@ export function CatalogPage({ userType: _userType }: CatalogPageProps) {
             return matchesSearch && matchesCategory;
         });
     }, [searchQuery, selectedCategory]);
+
+    // Operator view — event builder
+    if (userType === 'OPERATOR') {
+        return <EventBuilderHost />;
+    }
 
     return (
         <div className="min-h-screen bg-background pb-20">
@@ -162,7 +168,7 @@ export function CatalogPage({ userType: _userType }: CatalogPageProps) {
                                                 </div>
                                                 <div className="flex items-center gap-2 text-[10px] font-bold text-[#94a3b8] uppercase tracking-wider">
                                                     <MapPin className="w-3.5 h-3.5 text-[#ffb703]" />
-                                                    <span className="truncate">({venue.location.x1}, {venue.location.y1})</span>
+                                                    <span className="truncate">({venue.location.x}, {venue.location.y})</span>
                                                 </div>
                                             </div>
                                         </div>

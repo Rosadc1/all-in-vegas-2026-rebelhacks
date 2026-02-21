@@ -76,7 +76,7 @@ export function VenueDetailPage() {
                                 <span className="text-[9px] font-bold uppercase tracking-widest text-[#94a3b8]">Coordinates</span>
                             </div>
                             <p className="text-sm font-black text-white font-mono">
-                                ({venue.location.x1}, {venue.location.y1})
+                                ({venue.location.x}, {venue.location.y})
                             </p>
                         </div>
                     </div>

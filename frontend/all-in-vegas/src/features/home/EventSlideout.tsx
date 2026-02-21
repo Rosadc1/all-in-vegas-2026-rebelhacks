@@ -179,7 +179,7 @@ export function EventSlideout({ event, onClose }: EventSlideoutProps) {
                                                     <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
                                                         <span className="flex items-center gap-1">
                                                             <MapPin className="w-3 h-3" />
-                                                            {venue.location.x1}, {venue.location.y1}
+                                                            {venue.location.x}, {venue.location.y}
                                                         </span>
                                                     </div>
                                                 </div>

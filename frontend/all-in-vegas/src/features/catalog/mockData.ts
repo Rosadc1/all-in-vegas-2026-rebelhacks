@@ -62,7 +62,7 @@ export const catalogVenues: Venue[] = [
         title: 'Opening Keynote: The Future of Everything',
         description: 'A visionary look at how technology is reshaping our world. Industry leaders take the main stage to unveil the products and ideas that will define the next decade.',
         time: '09:00 AM',
-        location: { x1: 36.1340, x2: 36.1345, y1: -115.1520, y2: -115.1515 },
+        location: { x: 36.1340, y: -115.1520 },
     },
     {
         venueID: 'v2',
@@ -70,7 +70,7 @@ export const catalogVenues: Venue[] = [
         title: 'AI in Everyday Life',
         description: 'Exploring practical applications of AI from home to work. A deep dive into how artificial intelligence is being woven into consumer products, enterprise tools, and daily routines.',
         time: '11:00 AM',
-        location: { x1: 36.1350, x2: 36.1355, y1: -115.1510, y2: -115.1505 },
+        location: { x: 36.1350, y: -115.1510 },
     },
     {
         venueID: 'v3',
@@ -78,7 +78,7 @@ export const catalogVenues: Venue[] = [
         title: 'Robotics & Automation Expo',
         description: 'Live demonstrations of the latest industrial and consumer robots. See cutting-edge automation in action and meet the teams building the machines of tomorrow.',
         time: '02:00 PM',
-        location: { x1: 36.1360, x2: 36.1365, y1: -115.1500, y2: -115.1495 },
+        location: { x: 36.1360, y: -115.1500 },
     },
     // MAGIC Venues
     {
@@ -87,7 +87,7 @@ export const catalogVenues: Venue[] = [
         title: '2026 Color & Style Forecast',
         description: 'Unveiling the major trends that will dominate the fashion industry. Industry forecasters and top designers reveal the palettes, silhouettes, and materials shaping the season.',
         time: '10:00 AM',
-        location: { x1: 36.0930, x2: 36.0935, y1: -115.1750, y2: -115.1745 },
+        location: { x: 36.0930, y: -115.1750 },
     },
     {
         venueID: 'v5',
@@ -95,7 +95,7 @@ export const catalogVenues: Venue[] = [
         title: 'Sustainable Supply Chains',
         description: 'How to build an ethical and eco-friendly fashion brand from the ground up. Practical insights from leaders who have successfully integrated sustainability into every layer of production.',
         time: '01:30 PM',
-        location: { x1: 36.0940, x2: 36.0945, y1: -115.1740, y2: -115.1735 },
+        location: { x: 36.0940, y: -115.1740 },
     },
     // World of Concrete Venues
     {
@@ -104,7 +104,7 @@ export const catalogVenues: Venue[] = [
         title: 'Concrete Innovations 2026',
         description: 'New materials and mixing techniques for stronger, more durable structures. Researchers and engineers present the latest breakthroughs in concrete science.',
         time: '08:30 AM',
-        location: { x1: 36.1340, x2: 36.1345, y1: -115.1525, y2: -115.1520 },
+        location: { x: 36.1340, y: -115.1525},
     },
     {
         venueID: 'v7',
@@ -112,7 +112,7 @@ export const catalogVenues: Venue[] = [
         title: 'Smart City Infrastructure',
         description: 'Integrating sensors and data into modern urban construction. Exploring how smart materials and IoT connectivity are transforming how cities are built and managed.',
         time: '11:00 AM',
-        location: { x1: 36.1355, x2: 36.1360, y1: -115.1515, y2: -115.1510 },
+        location: { x: 36.1355, y: -115.1515},
     },
     // NAB Show Venues
     {
@@ -121,7 +121,7 @@ export const catalogVenues: Venue[] = [
         title: 'Streaming Wars: 2026',
         description: 'Analyzing the shift in global media consumption patterns. A frank discussion on where subscribers are going, what content wins, and how the major platforms are adapting.',
         time: '10:00 AM',
-        location: { x1: 36.1340, x2: 36.1345, y1: -115.1530, y2: -115.1525 },
+        location: { x: 36.1340, y: -115.1530 },
     },
     {
         venueID: 'v9',
@@ -129,6 +129,6 @@ export const catalogVenues: Venue[] = [
         title: 'Next-Gen Broadcast Tech',
         description: 'Deep dive into 8K and beyond. Sony engineers walk through the full production pipeline — from acquisition to delivery — for next-generation broadcast formats.',
         time: '02:00 PM',
-        location: { x1: 36.1350, x2: 36.1355, y1: -115.1520, y2: -115.1515 },
+        location: { x: 36.1350, y: -115.1520},
     },
 ];
