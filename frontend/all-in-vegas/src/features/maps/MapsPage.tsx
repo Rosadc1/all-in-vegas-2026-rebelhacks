@@ -1,20 +1,14 @@
 import { useState } from 'react';
-import { GoogleMap, Marker, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, Marker } from '@react-google-maps/api';
 import { MapPin } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { googleMapLasVegasBoundaries, lasVegasCenter } from '@/global/googleMapBoundaries';
-import { googleMapsAPIKey } from '@/global/googleMapAPI';
 import { catalogVenues, catalogEvents } from '@/features/catalog/mockData';
 
-const LIBRARIES: ('places')[] = ['places'];
 const MAP_ZOOM = 12;
 
 export function MapsPage() {
     const [selectedVenueId, setSelectedVenueId] = useState<string | null>(null);
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: googleMapsAPIKey,
-        libraries: LIBRARIES,
-    });
 
     const selectedVenue = selectedVenueId
         ? catalogVenues.find(v => v.venueID === selectedVenueId)
@@ -41,43 +35,35 @@ export function MapsPage() {
 
                 {/* Map */}
                 <div className="rounded-2xl overflow-hidden border border-border" style={{ height: '60vh' }}>
-                    {isLoaded ? (
-                        <GoogleMap
-                            mapContainerStyle={{ width: '100%', height: '100%' }}
-                            center={lasVegasCenter}
-                            zoom={MAP_ZOOM}
-                            options={{
-                                restriction: {
-                                    latLngBounds: googleMapLasVegasBoundaries,
-                                    strictBounds: true,
-                                },
-                            }}
-                        >
-                            {catalogVenues.map((venue) => {
-                                const isSelected = venue.venueID === selectedVenueId;
-                                return (
-                                    <Marker
-                                        key={venue.venueID}
-                                        position={{ lat: venue.location.x, lng: venue.location.y }}
-                                        onClick={() =>
-                                            setSelectedVenueId(isSelected ? null : venue.venueID)
-                                        }
-                                        icon={isSelected ? {
-                                            url: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
-                                            scaledSize: new window.google.maps.Size(48, 48),
-                                        } : undefined}
-                                        zIndex={isSelected ? 10 : 1}
-                                    />
-                                );
-                            })}
-                        </GoogleMap>
-                    ) : (
-                        <div className="w-full h-full bg-card flex items-center justify-center">
-                            <p className="text-muted-foreground text-sm font-bold uppercase tracking-wider">
-                                Loading map...
-                            </p>
-                        </div>
-                    )}
+                    <GoogleMap
+                        mapContainerStyle={{ width: '100%', height: '100%' }}
+                        center={lasVegasCenter}
+                        zoom={MAP_ZOOM}
+                        options={{
+                            restriction: {
+                                latLngBounds: googleMapLasVegasBoundaries,
+                                strictBounds: true,
+                            },
+                        }}
+                    >
+                        {catalogVenues.map((venue) => {
+                            const isSelected = venue.venueID === selectedVenueId;
+                            return (
+                                <Marker
+                                    key={venue.venueID}
+                                    position={{ lat: venue.location.x, lng: venue.location.y }}
+                                    onClick={() =>
+                                        setSelectedVenueId(isSelected ? null : venue.venueID)
+                                    }
+                                    icon={isSelected ? {
+                                        url: 'http://maps.google.com/mapfiles/ms/icons/yellow-dot.png',
+                                        scaledSize: new window.google.maps.Size(48, 48),
+                                    } : undefined}
+                                    zIndex={isSelected ? 10 : 1}
+                                />
+                            );
+                        })}
+                    </GoogleMap>
                 </div>
 
                 {/* Selected venue callout */}
