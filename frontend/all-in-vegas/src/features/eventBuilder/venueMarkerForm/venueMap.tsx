@@ -127,16 +127,6 @@ export function VenueMap({ chosenLat, chosenLng, onVenuesChange, eventCreated = 
                 <div className="mt-4 p-4 rounded-lg border">
                     <VenueList venues={venues} onRemoveVenue={handleRemoveVenue} />
                 </div>
-
-                {/* Navigation Buttons */}
-                <div className="flex flex-row justify-end gap-5 mt-4">
-                    <Button onClick={() => useNav(routerMap.HOME)} variant="outline" type="button">
-                        Cancel
-                    </Button>
-                    <Button type="submit" disabled={venues.length === 0}>
-                        Submit All Venues
-                    </Button>
-                </div>
             </CardContent>
         </Card>
     );

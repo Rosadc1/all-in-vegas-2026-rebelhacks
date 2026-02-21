@@ -13,6 +13,7 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
+import { useGetEventRecommendationsMutation } from '@/services/ai-service';
 import { ChatModeSelector } from './ChatModeSelector';
 import { EventRecommendationForm } from './EventRecommendation/EventRecommendationForm';
 import { EventRecommendationPreview } from './EventRecommendation/EventRecommendationPreview';
@@ -38,6 +39,7 @@ export function AIChatModal({
   onClose,
   onOpenChange,
 }: AIChatModalProps) {
+  const [getEventRecommendations] = useGetEventRecommendationsMutation();
   const [mode, setMode] = useState<ChatMode>('recommendation');
   const [formStep, setFormStep] = useState<FormStep>('modeSelect');
   const [isLoading, setIsLoading] = useState(false);
@@ -78,12 +80,20 @@ export function AIChatModal({
   const handleRecommendationSubmit = async (data: EventRecommendationFormData) => {
     setIsLoading(true);
     try {
-      // TODO: Call AI API to get event recommendations
-      // const response = await aiChatService.getEventRecommendations(data);
-      // setRecommendedEvents(response.events);
+      const response = await getEventRecommendations({ prompt: data.prompt }).unwrap();
       
-      // Placeholder: mock data
-      setRecommendedEvents([]);
+      // Convert recommended event names to Event objects with placeholder data
+      const events: Event[] = response.Recommended.map((name, index) => ({
+        eventID: `recommended-${index}`,
+        userId: 'ai-recommendation',
+        title: name,
+        description: 'AI Recommended Event',
+        date: [],
+        location: 'Las Vegas, Nevada',
+        tag: ['recommended'],
+      }));
+      
+      setRecommendedEvents(events);
       setFormStep('eventRecommendationPreview');
     } catch (error) {
       console.error('Error getting recommendations:', error);
@@ -130,7 +140,7 @@ export function AIChatModal({
           <div className="flex items-center justify-between pr-0">
             <div>
               <DialogTitle className="text-xl">
-                {mode === 'recommendation' ? 'AI Event Recommender' : 'AI Schedule Builder'}
+                {mode === 'recommendation' ? 'AI Event Recommender' : 'AI Schedule Builder (Coming Soon)'}
               </DialogTitle>
               <DialogDescription className="mt-1">
                 {formStep === 'modeSelect'
@@ -202,8 +212,9 @@ export function AIChatModal({
                 <Button
                   onClick={() => setFormStep('eventSelector')}
                   className="w-full"
+                  disabled
                 >
-                  Start Schedule Builder
+                  Start Schedule Builder (Not Available yet)
                 </Button>
               </div>
             )}
