@@ -33,10 +33,6 @@ public class Event {
         this.userID = userID;
     }
 
-    public void setEventId(UUID eventID) {
-        this.eventID = eventID;
-    }
-
     public String getTitle() {
         return title;
     }

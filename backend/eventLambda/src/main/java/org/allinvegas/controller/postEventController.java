@@ -37,14 +37,14 @@ public class postEventController implements RequestHandler<Map<String,Object>, M
                 throw new IllegalArgumentException("Unexpected body type: {}" + body.getClass());
             }
 
-            logger.info("Created User Object Sucessfully");
+            logger.info("Created Event Object Sucessfully");
 
-            eventService.postEvent(eventModel);
+            String eventID = eventService.postEvent(eventModel);
 
             logger.info("Added Event Object to DynamoDB Sucessfully");
 
-            response.put("statusCode", 200);
-            response.put("body", "{\"status\":200,\"message\":\"Event created.\"}");
+            response.put("statusCode", 201);
+            response.put("body", "{\"status\":201,\"message\":\"Event created.\",\"eventID\":\""+ eventID +"\"}");
             return response;
         }
         catch (Exception e) {

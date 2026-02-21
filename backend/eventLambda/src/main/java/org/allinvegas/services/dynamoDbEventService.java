@@ -19,7 +19,7 @@ public class dynamoDbEventService {
     private static final Logger logger = LoggerFactory.getLogger(dynamoDbEventService.class);
 
 
-    public void postEvent(Event eventModel) {
+    public String postEvent(Event eventModel) {
         logger.info("Posting event to DynamoDB");
 
         Map<String, AttributeValue> item = new HashMap<>();
@@ -28,7 +28,7 @@ public class dynamoDbEventService {
 
 
 
-            eventModel.setEventId(UUID.randomUUID());
+            eventModel.setEventID(UUID.randomUUID());
             item.put("eventID", AttributeValue.builder().s(eventModel.getEventId().toString()).build());
 
             if (eventModel.getTitle() != null) {
@@ -63,6 +63,7 @@ public class dynamoDbEventService {
             // Call AI API
 
 
+
             if (eventModel.getTag() != null) {
                 List<String> tags = eventModel.getTag();
                 List<AttributeValue> datesList = new ArrayList<>();
@@ -82,6 +83,7 @@ public class dynamoDbEventService {
 
             dynamoDbClient.putItem(request);
             logger.info("Successfully posted event to DynamoDB with EventID: {}", eventModel.getEventId());
+            return eventModel.getEventID().toString();
 
         } catch (Exception e) {
             logger.error("Error posting event to DynamoDB", e);
