@@ -1,5 +1,5 @@
 import { useParams, useNavigate } from 'react-router';
-import { ArrowLeft, Calendar as CalendarIcon, MapPin, Bookmark, Clock, ChevronRight } from 'lucide-react';
+import { ArrowLeft, Calendar as CalendarIcon, MapPin, Clock, ChevronRight } from 'lucide-react';
 import { motion } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -93,19 +93,6 @@ export function ConventionDetailPage() {
                         <p className="text-[10px] font-bold text-[#94a3b8] uppercase tracking-wider mt-0.5">Las Vegas, NV</p>
                     </div>
 
-                </motion.div>
-
-                {/* Save button */}
-                <motion.div
-                    initial={{ opacity: 0, y: 16 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: 0.05 }}
-                    className="mb-10"
-                >
-                    <Button className="bg-card border border-[#ffb703]/40 text-[#ffb703] hover:bg-[#ffb703]/10 font-bold uppercase tracking-widest h-12 px-8">
-                        <Bookmark className="w-4 h-4 mr-2" />
-                        Save Convention
-                    </Button>
                 </motion.div>
 
                 {/* About */}
