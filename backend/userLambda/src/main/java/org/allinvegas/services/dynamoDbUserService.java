@@ -62,7 +62,6 @@ public class dynamoDbUserService {
             user.setUserID(UUID.fromString(item.get("userID").s()));
             if (item.containsKey("userType")) user.setUserType(User.UserType.valueOf(item.get("userType").s()));
             user.setUserName(item.getOrDefault("userName", AttributeValue.builder().s("").build()).s());
-            user.setPasswordHash(item.getOrDefault("passwordHash", AttributeValue.builder().s("").build()).s());
 
             if (item.containsKey("events")) {
                 List<UUID> eventIds = item.get("events").l().stream().map(AttributeValue::s).map(UUID::fromString).collect(Collectors.toList());
