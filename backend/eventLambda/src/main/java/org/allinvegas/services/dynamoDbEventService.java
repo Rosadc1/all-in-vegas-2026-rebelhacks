@@ -5,6 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
 import software.amazon.awssdk.services.dynamodb.model.*;
+import java.util.ArrayList;
+import java.util.List;
 
 import java.util.*;
 
@@ -17,6 +19,7 @@ public class dynamoDbEventService {
         this.dynamoDbClient = DynamoDbClient.create();
     }
     private static final Logger logger = LoggerFactory.getLogger(dynamoDbEventService.class);
+    public eventTagGenerator eventTagGenerator = new eventTagGenerator();
 
 
     public String postEvent(Event eventModel) {
@@ -60,8 +63,8 @@ public class dynamoDbEventService {
                 throw new IllegalArgumentException("Location cannot be null");
             }
 
-            // Call AI API
 
+            eventModel.setTag(eventTagGenerator.createTagsFromAi(eventModel.getDescription()));
 
 
             if (eventModel.getTag() != null) {
