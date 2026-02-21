@@ -29,7 +29,7 @@ public class dynamoDbUserService {
             );
             ScanRequest request = ScanRequest.builder()
                     .tableName(tableName)
-                    .filterExpression("userNAme  = :u AND passwordHash = :p")
+                    .filterExpression("userName  = :u AND passwordHash = :p")
                     .expressionAttributeValues(expressionAttributeValue)
                     .limit(1)
                     .build();
