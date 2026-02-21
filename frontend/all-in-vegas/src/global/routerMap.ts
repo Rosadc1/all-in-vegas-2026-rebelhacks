@@ -10,5 +10,7 @@ export const routerMap = {
     CREATE: 'create',
     EDIT: 'edit',
     MENU: 'menu',
+    ABOUT: 'about',
+    HELP: 'help',
     Event_BUILDER: 'eventBuilder',
 }
