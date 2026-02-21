@@ -2,8 +2,6 @@ import { useState } from 'react';
 import { GoogleMap, Marker } from '@react-google-maps/api';
 import { defaultZoomLevel, googleMapLasVegasBoundaries } from '@/global/googleMapBoundaries';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { routerMap } from '@/global/routerMap';
 import { useNavigate } from 'react-router';
 import { VenueForm } from './VenueForm';
 import { VenueList } from './VenueList';
