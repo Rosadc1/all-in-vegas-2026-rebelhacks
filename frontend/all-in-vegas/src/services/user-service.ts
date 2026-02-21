@@ -36,7 +36,7 @@ export const userAPI = createApi({
         }),
         getUserIdByCredentials: builder.mutation<getUserIdByCredentialsResponse, getUserIdByCredentialsRequest>({
             query: (arg) => ({
-                url: `users/username/${arg.userName}`,
+                url: `users/login/${arg.userName}`,
                 method: 'POST',
                 body: { passwordHash: arg.passwordHash }
             }),
