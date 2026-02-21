@@ -15,8 +15,28 @@ const MONTH_NAMES = [
 ];
 
 export function CalendarPage() {
-    const { savedVenues, toggleSaveVenue } = useAppContext();
+    const { savedVenues, toggleSaveVenue, userType } = useAppContext();
     const navigate = useNavigate();
+
+    if (!userType) {
+        return (
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center gap-4 px-4">
+                <Calendar className="w-16 h-16 text-muted-foreground opacity-20" />
+                <h2 className="text-2xl font-black text-foreground uppercase tracking-tight">Your Schedule</h2>
+                <p className="text-muted-foreground text-sm text-center max-w-sm">
+                    Log in to save sessions and build your personal convention schedule.
+                </p>
+                <div className="flex gap-3 mt-2">
+                    <Button onClick={() => navigate('/login')} variant="outline" className="font-bold uppercase tracking-wider">
+                        Log In
+                    </Button>
+                    <Button onClick={() => navigate('/signUp')} className="font-bold uppercase tracking-wider shadow-lg shadow-primary/50">
+                        Sign Up
+                    </Button>
+                </div>
+            </div>
+        );
+    }
 
     const today = new Date();
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
