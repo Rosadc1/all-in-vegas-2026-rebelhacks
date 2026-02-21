@@ -18,7 +18,7 @@ export default function Header() {
     
     return(
         <div className="flex justify-between border-b-2 p-2 shrink-0">
-            <h1 className="font-extrabold">ALL IN <p className="text-secondary">VEGAS</p></h1>
+            <a className="cursor-pointer" onClick={() => useNav(routerMap.HOME)}><h1 className="font-extrabold">ALL IN <p className="text-secondary">VEGAS</p></h1></a>
             <div className="flex gap-2 items-center">
                 {isLoggedIn ? (
                         <Button variant="ghost" onClick={() =>{ localStorage.removeItem("userID"); useNav(routerMap.LOGIN)}}><LogOut className="w-4 h-4"/>Logout</Button>      
