@@ -3,10 +3,7 @@ package org.allinvegas.handler;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
-import org.allinvegas.controller.deleteEventController;
-import org.allinvegas.controller.getEventController;
-import org.allinvegas.controller.postEventController;
-import org.allinvegas.controller.updateEventController;
+import org.allinvegas.controller.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,6 +16,8 @@ public class eventHandler implements RequestHandler<Map<String,Object>, Map<Stri
     private final updateEventController updateEventController = new updateEventController();
     private final postEventController postEventController = new postEventController();
     private final deleteEventController deleteEventController = new deleteEventController();
+    private  final getListEventController getListEventController = new getListEventController();
+    private  final getListEventByIDController getListEventByIDController = new getListEventByIDController();
 
     @Override
     public Map<String, Object> handleRequest(Map<String, Object> event, Context context) {
@@ -28,6 +27,7 @@ public class eventHandler implements RequestHandler<Map<String,Object>, Map<Stri
         // GET: Get the Event
         // PATCH: Update the Event attributes
         String httpMethod = (String) event.get("httpMethod");
+        String path = (String)event.get("path");
 
         logger.info("event: " + event);
         logger.info("Context: " + context.toString());
@@ -40,12 +40,29 @@ public class eventHandler implements RequestHandler<Map<String,Object>, Map<Stri
             );
         }
 
+        if (path == null) {
+            logger.error("path is missing in the Lambda event. Check API Gateway configuration.{}", event.toString());
+            return Map.of(
+                    "statusCode", 400,
+                    "body", "{\"status\":400,\"message\":\"Bad Request: Path not supplied.\"}"
+            );
+        }
+
         if (httpMethod.equals("POST")) {
             // Calls and Return the POST eventHandler
             return postEventController.handleRequest(event, context);
         } else if (httpMethod.equals("GET")) {
             // Calls and Return the GET eventHandler
-            return getEventController.handleRequest(event, context);
+            if (path.startsWith("/events/{userID}")) {
+                getListEventByIDController.handleRequest(event, context);
+            } else if (path.startsWith("/events")) {
+                return getListEventController.handleRequest(event, context);
+            } else if (path.startsWith("/event/{eventID}")) {
+                return getEventController.handleRequest(event, context);
+            } else {
+                logger.error("Invalid HTTP Method. Check API Gateway configuration.{}", event.toString());
+                throw new java.lang.IllegalArgumentException("Invalid HTTP Method. Check API Gateway configuration.");
+            }
         } else if (httpMethod.equals("PATCH")) {
             // Call and return the PATCH eventHandler
             return updateEventController.handleRequest(event, context);

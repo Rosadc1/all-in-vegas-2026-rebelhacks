@@ -1,5 +1,6 @@
 package org.allinvegas.handler;
 
+
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
 import org.allinvegas.controller.deleteVenueController;
