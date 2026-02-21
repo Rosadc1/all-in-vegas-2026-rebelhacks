@@ -8,7 +8,8 @@ const AppHost = lazy(() => import('@/features/common/appHost/appHost'));
 const OrganizerGuard = lazy(() => import('@/features/auth/organizerGuard'));
 const HomePage = lazy(() => import('@/features/home/home').then(m => ({ default: m.HomePage })));
 const AuthHost = lazy(() => import('@/features/auth/authHost/authHost'));
-
+const Login = lazy(() => import('@/features/auth/authHost/login').then(m => ({ default: m.Login })));
+const Signup = lazy(() => import('@/features/auth/authHost/signUp').then(m => ({ default: m.Signup })));
 function App() {
 
   return (
@@ -25,8 +26,8 @@ function App() {
             </Route>
         </Route>
         <Route element={<AuthHost/>}>
-            <Route path={routerMap.SIGNUP} element={<></>}/>
-            <Route path={routerMap.LOGIN} element={<></>}/>
+            <Route path={routerMap.SIGNUP} element={<Signup/>}/>
+            <Route path={routerMap.LOGIN} element={<Login/>}/>
         </Route>
 
     </Routes>
