@@ -65,12 +65,12 @@ public class dynamoDbUserService {
             if (user.getPasswordHash() != null)
                 item.put("passwordHash", AttributeValue.builder().s(user.getPasswordHash()).build());
 
-            if (user.getEvents() != null && !user.getEvents().isEmpty()) {
-                List<AttributeValue> eventsList = user.getEvents().stream()
-                        .map(uuid -> AttributeValue.builder().s(uuid.toString()).build())
-                        .collect(Collectors.toList());
-                item.put("events", AttributeValue.builder().l(eventsList).build());
-            }
+//            if (user.getEvents() != null && !user.getEvents().isEmpty()) {
+//                List<AttributeValue> eventsList = user.getEvents().stream()
+//                        .map(uuid -> AttributeValue.builder().s(uuid.toString()).build())
+//                        .collect(Collectors.toList());
+//                item.put("events", AttributeValue.builder().l(eventsList).build());
+//            }
 
             item.put("createdAt", AttributeValue.builder().s(Instant.now().toString()).build());
 

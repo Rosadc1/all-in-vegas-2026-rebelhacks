@@ -12,6 +12,8 @@ const CatalogPage = lazy(() => import('@/features/catalog/CatalogPage').then(m =
 const VenueDetailPage = lazy(() => import('@/features/catalog/VenueDetailPage').then(m => ({ default: m.VenueDetailPage })));
 const ConventionDetailPage = lazy(() => import('@/features/catalog/ConventionDetailPage').then(m => ({ default: m.ConventionDetailPage })));
 
+const Login = lazy(() => import('@/features/auth/authHost/login').then(m => ({ default: m.Login })));
+const Signup = lazy(() => import('@/features/auth/authHost/signUp').then(m => ({ default: m.Signup })));
 function App() {
 
   return (
@@ -31,8 +33,8 @@ function App() {
             </Route>
         </Route>
         <Route element={<AuthHost/>}>
-            <Route path={routerMap.SIGNUP} element={<></>}/>
-            <Route path={routerMap.LOGIN} element={<></>}/>
+            <Route path={routerMap.SIGNUP} element={<Signup/>}/>
+            <Route path={routerMap.LOGIN} element={<Login/>}/>
         </Route>
 
     </Routes>
