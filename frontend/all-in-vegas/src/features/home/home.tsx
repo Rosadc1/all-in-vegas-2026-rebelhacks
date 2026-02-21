@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Search, Filter, TrendingUp, Calendar as CalendarIcon, MapPin } from 'lucide-react';
+import { Search, TrendingUp, Calendar as CalendarIcon, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
@@ -52,9 +52,6 @@ export function HomePage() {
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-12 h-12"
                         />
-                        <button className="absolute right-2 top-1/2 -translate-y-1/2 p-2 hover:bg-muted rounded-md transition-colors">
-                            <Filter className="w-5 h-5 text-muted-foreground" />
-                        </button>
                     </div>
                     <AIChatHost/>
                 </div>

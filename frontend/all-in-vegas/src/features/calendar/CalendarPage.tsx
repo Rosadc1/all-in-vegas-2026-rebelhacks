@@ -160,7 +160,7 @@ export function CalendarPage() {
                                 <div className="grid grid-cols-7">
                                     {calendarDays.map((day, idx) => {
                                         if (day === null) return (
-                                            <div key={`pad-${idx}`} className={`min-h-[88px] border-b border-border/20 ${(idx + 1) % 7 !== 0 ? 'border-r' : ''}`} />
+                                            <div key={`pad-${idx}`} className={`min-h-[135px] border-b border-border/20 ${(idx + 1) % 7 !== 0 ? 'border-r' : ''}`} />
                                         );
                                         const dayEvents = getCreatedEventsForDay(day);
                                         const hasEvents = dayEvents.length > 0;
@@ -171,7 +171,7 @@ export function CalendarPage() {
                                                 key={day}
                                                 onClick={() => hasEvents && setSelectedDay(isSelected ? null : day)}
                                                 whileHover={hasEvents ? { backgroundColor: 'hsl(var(--muted)/0.4)' } : {}}
-                                                className={`min-h-[88px] p-2 border-b border-border/20 transition-colors relative select-none ${(idx + 1) % 7 !== 0 ? 'border-r' : ''} ${hasEvents ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/8' : ''}`}
+                                                className={`min-h-[135px] p-2 border-b border-border/20 transition-colors relative select-none ${(idx + 1) % 7 !== 0 ? 'border-r' : ''} ${hasEvents ? 'cursor-pointer' : ''} ${isSelected ? 'bg-primary/8' : ''}`}
                                             >
                                                 <div className={`w-7 h-7 flex items-center justify-center rounded-full text-sm font-bold mb-1 mx-auto ${isToday ? 'bg-secondary text-secondary-foreground' : ''} ${isSelected && !isToday ? 'bg-primary text-primary-foreground' : ''} ${!isToday && !isSelected ? 'text-foreground' : ''}`}>
                                                     {day}
@@ -349,7 +349,7 @@ export function CalendarPage() {
                                         return (
                                             <div
                                                 key={`pad-${idx}`}
-                                                className={`min-h-[88px] border-b border-border/20 ${(idx + 1) % 7 !== 0 ? 'border-r' : ''}`}
+                                                className={`min-h-[135px] border-b border-border/20 ${(idx + 1) % 7 !== 0 ? 'border-r' : ''}`}
                                             />
                                         );
                                     }
@@ -368,7 +368,7 @@ export function CalendarPage() {
                                             key={day}
                                             onClick={() => hasEntries && setSelectedDay(isSelected ? null : day)}
                                             whileHover={hasEntries ? { backgroundColor: 'hsl(var(--muted)/0.4)' } : {}}
-                                            className={`min-h-[88px] p-2 border-b border-border/20 transition-colors relative select-none
+                                            className={`min-h-[135px] p-2 border-b border-border/20 transition-colors relative select-none
                                                 ${(idx + 1) % 7 !== 0 ? 'border-r' : ''}
                                                 ${hasEntries ? 'cursor-pointer' : ''}
                                                 ${isSelected ? 'bg-primary/8' : ''}
