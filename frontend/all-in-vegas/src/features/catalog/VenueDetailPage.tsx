@@ -4,13 +4,16 @@ import { motion } from 'motion/react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { catalogVenues, catalogEvents } from './mockData';
+import { useAppContext } from '@/context/AppContext';
 
 export function VenueDetailPage() {
     const { venueId } = useParams<{ venueId: string }>();
     const navigate = useNavigate();
+    const { toggleSaveVenue, isVenueSaved, userType } = useAppContext();
 
     const venue = catalogVenues.find((v) => v.venueID === venueId);
     const parentEvent = venue ? catalogEvents.find((e) => e.id === venue.eventID) : null;
+    const saved = venue ? isVenueSaved(venue.venueID) : false;
 
     if (!venue) {
         return (
@@ -79,9 +82,19 @@ export function VenueDetailPage() {
                     </div>
 
                     {/* Save button */}
-                    <Button className="bg-card border border-[#ffb703]/40 text-[#ffb703] hover:bg-[#ffb703]/10 font-bold uppercase tracking-widest h-12 px-8">
-                        <Bookmark className="w-4 h-4 mr-2" />
-                        Save Venue
+                    <Button
+                        onClick={() => {
+                            if (!userType) { navigate('/login'); return; }
+                            if (venue && parentEvent) toggleSaveVenue(venue, parentEvent);
+                        }}
+                        className={`border font-bold uppercase tracking-widest h-12 px-8 transition-colors ${
+                            saved
+                                ? 'bg-[#ffb703]/10 border-[#ffb703] text-[#ffb703]'
+                                : 'bg-card border-[#ffb703]/40 text-[#ffb703] hover:bg-[#ffb703]/10'
+                        }`}
+                    >
+                        <Bookmark className="w-4 h-4 mr-2" fill={saved ? 'currentColor' : 'none'} />
+                        {saved ? 'Saved' : 'Save Venue'}
                     </Button>
                 </motion.div>
 

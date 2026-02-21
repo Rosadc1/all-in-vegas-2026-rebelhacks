@@ -7,6 +7,7 @@ import { motion } from 'motion/react';
 import { useSearchParams, useNavigate } from 'react-router';
 import { ImageWithFallback } from '@/components/image/ImageWithFallback';
 import { catalogEvents, catalogVenues } from './mockData';
+import { useAppContext } from '@/context/AppContext';
 
 const categories = ['All', 'Technology', 'Fashion', 'Construction', 'Media', 'Automotive'];
 
@@ -17,6 +18,7 @@ interface CatalogPageProps {
 export function CatalogPage({ userType: _userType }: CatalogPageProps) {
     const [searchParams] = useSearchParams();
     const navigate = useNavigate();
+    const { toggleSaveVenue, isVenueSaved, userType } = useAppContext();
     const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
     const [selectedCategory, setSelectedCategory] = useState('All');
     const [viewMode, setViewMode] = useState<'venues' | 'conventions'>('venues');
@@ -168,10 +170,15 @@ export function CatalogPage({ userType: _userType }: CatalogPageProps) {
                                             <Button
                                                 variant="ghost"
                                                 size="icon"
-                                                className="text-[#94a3b8] hover:text-[#ffb703] hover:bg-white/5"
-                                                onClick={(e) => e.stopPropagation()}
+                                                className={`hover:bg-white/5 ${isVenueSaved(venue.venueID) ? 'text-[#ffb703]' : 'text-[#94a3b8] hover:text-[#ffb703]'}`}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    if (!userType) { navigate('/login'); return; }
+                                                    const parentEvent = catalogEvents.find(ev => ev.id === venue.eventID);
+                                                    if (parentEvent) toggleSaveVenue(venue, parentEvent);
+                                                }}
                                             >
-                                                <Bookmark className="w-5 h-5" />
+                                                <Bookmark className="w-5 h-5" fill={isVenueSaved(venue.venueID) ? 'currentColor' : 'none'} />
                                             </Button>
                                             <ChevronRight className="w-5 h-5 text-[#94a3b8]" />
                                         </div>

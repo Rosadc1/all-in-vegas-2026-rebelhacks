@@ -18,9 +18,39 @@ interface AppContextType {
 
 const AppContext = createContext<AppContextType | null>(null);
 
+function loadSavedVenues(): Map<string, SavedEntry> {
+    const userID = localStorage.getItem('userID');
+    if (!userID) return new Map();
+    try {
+        const raw = localStorage.getItem(`savedVenues_${userID}`);
+        if (!raw) return new Map();
+        const entries: [string, SavedEntry][] = JSON.parse(raw);
+        return new Map(entries);
+    } catch {
+        return new Map();
+    }
+}
+
+function persistSavedVenues(venues: Map<string, SavedEntry>) {
+    const userID = localStorage.getItem('userID');
+    if (!userID) return;
+    localStorage.setItem(`savedVenues_${userID}`, JSON.stringify(Array.from(venues.entries())));
+}
+
 export function AppProvider({ children }: { children: ReactNode }) {
-    const [userType, setUserType] = useState<userType | null>(null);
-    const [savedVenues, setSavedVenues] = useState<Map<string, SavedEntry>>(new Map());
+    const [userType, setUserTypeState] = useState<userType | null>(
+        () => localStorage.getItem('userType') as userType | null
+    );
+    const [savedVenues, setSavedVenues] = useState<Map<string, SavedEntry>>(loadSavedVenues);
+
+    const setUserType = (type: userType | null) => {
+        setUserTypeState(type);
+        if (type) {
+            localStorage.setItem('userType', type);
+        } else {
+            localStorage.removeItem('userType');
+        }
+    };
 
     const toggleSaveVenue = (venue: Venue, event: CatalogEvent) => {
         setSavedVenues(prev => {
@@ -30,6 +60,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
             } else {
                 next.set(venue.venueID, { venue, event });
             }
+            persistSavedVenues(next);
             return next;
         });
     };

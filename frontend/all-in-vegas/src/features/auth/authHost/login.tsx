@@ -12,6 +12,7 @@ import { useAuthAlert } from "@/hooks/authAlertHook";
 import { AuthAlert } from "./authAlert";
 import { useGetUserIdByCredentialsMutation } from "@/services/user-service";
 import { LoaderCircle } from "lucide-react";
+import { useAppContext } from "@/context/AppContext";
 export function Login() { 
     const nav = useNavigate();
     const [tab, setTab] = useState<"CUSTOMER" | "OPERATOR">("CUSTOMER");
@@ -21,7 +22,8 @@ export function Login() {
         resolver: zodResolver(userLoginSchema)
     });
 
-    
+    const { setUserType } = useAppContext();
+
     const loginUser = async (data:UserLoginData) => { 
         try { 
             const response = await getUserIdByCredentials({
@@ -31,6 +33,7 @@ export function Login() {
             const userID = 'userID' in response ? response.userID : null;
             if(userID) { 
                 localStorage.setItem("userID", userID);
+                setUserType(tab);
                 nav(routerMap.HOME);
             } else { 
                 throw new Error("Invalid credentials");
