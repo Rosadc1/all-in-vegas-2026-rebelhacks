@@ -28,7 +28,7 @@ public class postUserController implements RequestHandler<Map<String,Object>, Ma
 
             userService.postUser(user);
 
-            response.put("statusCode", 200);
+            response.put("statusCode", 201);
             response.put("body", "{\"status\":200,\"message\":\"User created.\"}");
             return response;
 
