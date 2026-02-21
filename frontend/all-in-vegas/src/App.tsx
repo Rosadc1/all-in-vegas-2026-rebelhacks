@@ -14,6 +14,9 @@ const CatalogPage = lazy(() => import('@/features/catalog/CatalogPage').then(m =
 const VenueDetailPage = lazy(() => import('@/features/catalog/VenueDetailPage').then(m => ({ default: m.VenueDetailPage })));
 const ConventionDetailPage = lazy(() => import('@/features/catalog/ConventionDetailPage').then(m => ({ default: m.ConventionDetailPage })));
 const CalendarPage = lazy(() => import('@/features/calendar/CalendarPage').then(m => ({ default: m.CalendarPage })));
+const MenuPage = lazy(() => import('@/features/menu/MenuPage').then(m => ({ default: m.MenuPage })));
+const AboutPage = lazy(() => import('@/features/menu/AboutPage').then(m => ({ default: m.AboutPage })));
+const HelpCenterPage = lazy(() => import('@/features/menu/HelpCenterPage').then(m => ({ default: m.HelpCenterPage })));
 
 const Login = lazy(() => import('@/features/auth/authHost/login').then(m => ({ default: m.Login })));
 const Signup = lazy(() => import('@/features/auth/authHost/signUp').then(m => ({ default: m.Signup })));
@@ -30,7 +33,9 @@ function App() {
             <Route path={routerMap.CONVENTION_DETAIL} element={<ConventionDetailPage/>}/>
             <Route path={routerMap.CALENDAR} element={<CalendarPage/>}/>
             <Route path={routerMap.MAPS} element={<></>}/>
-            <Route path={routerMap.MENU} element={<></>}/>
+            <Route path={routerMap.MENU} element={<MenuPage/>}/>
+            <Route path={routerMap.ABOUT} element={<AboutPage/>}/>
+            <Route path={routerMap.HELP} element={<HelpCenterPage/>}/>
             <Route path={routerMap.Event_BUILDER} element={<OrganizerGuard/>}>
               <Route path={routerMap.CREATE} element={<EventBuilderHost/>}/>
               <Route path={routerMap.EDIT} element={<EventBuilderHost/>}/>
