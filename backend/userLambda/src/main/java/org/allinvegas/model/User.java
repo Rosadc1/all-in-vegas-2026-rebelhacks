@@ -16,9 +16,9 @@ public class User {
         CUSTOMER
     }
 
-    public  UUID getUserId() { return userID; }
-    public void setUserId(UUID userId) {
-        this.userID = userId;
+    public  UUID getUserID() { return userID; }
+    public void setUserID(UUID userID) {
+        this.userID = userID;
     }
 
     public UserType getUserType() { return userType; }

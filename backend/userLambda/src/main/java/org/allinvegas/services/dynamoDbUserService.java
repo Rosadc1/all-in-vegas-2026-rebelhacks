@@ -21,6 +21,31 @@ public class dynamoDbUserService {
 
     private static final Logger logger = LoggerFactory.getLogger(dynamoDbUserService.class);
 
+    public String getUserIDByUserName(String userName, String password) {
+        try {
+            Map<String, AttributeValue> expressionAttributeValue = Map.of(
+                    ":u", AttributeValue.builder().s(userName).build(),
+                    ":p", AttributeValue.builder().s(password).build()
+            );
+            ScanRequest request = ScanRequest.builder()
+                    .tableName(tableName)
+                    .filterExpression("userNAme  = :u AND passwordHash = :p")
+                    .expressionAttributeValues(expressionAttributeValue)
+                    .limit(1)
+                    .build();
+            ScanResponse response = dynamoDbClient.scan(request);
+
+            if (response.count() == 0) {
+                return null;
+            }
+
+            return response.items().getFirst().get("userID").s();
+        } catch (Exception e) {
+            logger.error("Error retrieving userID by username and password: {}", e.getMessage());
+            throw new RuntimeException(e);
+        }
+    }
+
     public User getUser(String userId) {
         logger.info("Fetching user with id {}", userId);
         try {
@@ -34,7 +59,7 @@ public class dynamoDbUserService {
             Map<String, AttributeValue> item = response.item();
             User user = new User();
 
-            user.setUserId(UUID.fromString(item.get("userID").s()));
+            user.setUserID(UUID.fromString(item.get("userID").s()));
             if (item.containsKey("userType")) user.setUserType(User.UserType.valueOf(item.get("userType").s()));
             user.setUserName(item.getOrDefault("userName", AttributeValue.builder().s("").build()).s());
             user.setPasswordHash(item.getOrDefault("passwordHash", AttributeValue.builder().s("").build()).s());
@@ -50,46 +75,99 @@ public class dynamoDbUserService {
         }
     }
 
-    public void postUser(User user) {
-        if (user.getUserId() == null) {
-            throw new IllegalArgumentException("userID cannot be null");
-        }
-        logger.info("Creating user with id {}", user.getUserId());
+    public UUID postUser(User user) {
+
+        UUID newUserId = UUID.randomUUID();
+        user.setUserID(newUserId);
+
+        logger.info("Creating user with id {}", newUserId);
+
         try {
             Map<String, AttributeValue> item = new HashMap<>();
-            item.put("userID", AttributeValue.builder().s(user.getUserId().toString()).build());
+
+            item.put("userID",
+                    AttributeValue.builder().s(newUserId.toString()).build());
+
             if (user.getUserType() != null)
-                item.put("userType", AttributeValue.builder().s(user.getUserType().toString()).build());
+                item.put("userType",
+                        AttributeValue.builder().s(user.getUserType().toString()).build());
+
             if (user.getUserName() != null)
-                item.put("userName", AttributeValue.builder().s(user.getUserName()).build());
+                item.put("userName",
+                        AttributeValue.builder().s(user.getUserName()).build());
+
             if (user.getPasswordHash() != null)
-                item.put("passwordHash", AttributeValue.builder().s(user.getPasswordHash()).build());
+                item.put("passwordHash",
+                        AttributeValue.builder().s(user.getPasswordHash()).build());
 
-//            if (user.getEvents() != null && !user.getEvents().isEmpty()) {
-//                List<AttributeValue> eventsList = user.getEvents().stream()
-//                        .map(uuid -> AttributeValue.builder().s(uuid.toString()).build())
-//                        .collect(Collectors.toList());
-//                item.put("events", AttributeValue.builder().l(eventsList).build());
-//            }
-
-            item.put("createdAt", AttributeValue.builder().s(Instant.now().toString()).build());
+            item.put("createdAt",
+                    AttributeValue.builder().s(Instant.now().toString()).build());
 
             PutItemRequest request = PutItemRequest.builder()
                     .tableName(tableName)
                     .item(item)
-                    .conditionExpression("attribute_not_exists(userID)")
+                    .conditionExpression("attribute_not_exists(userName)")
                     .build();
 
             dynamoDbClient.putItem(request);
 
+            return newUserId;
+
         } catch (ConditionalCheckFailedException e) {
-            logger.error("User with id {} already exists", user.getUserId());
-            throw new IllegalArgumentException("User with id " + user.getUserId() + " already exists.");
+            logger.error("User with id {} already exists", newUserId);
+            throw new IllegalArgumentException("User with id " + newUserId + " already exists.");
         } catch (Exception e) {
-            logger.error("Error creating user {}: {}", user.getUserId(), e.getMessage());
+            logger.error("Error creating user {}: {}", newUserId, e.getMessage());
             throw new RuntimeException(e);
         }
     }
+
+//    public UUID postUser(User user) {
+//        if (user.getUserId() == null) {
+//            throw new IllegalArgumentException("userID cannot be null");
+//        }
+//        logger.info("Creating user with id {}", user.getUserId());
+//        try {
+//
+//            user.setUserID(UUID.randomUUID());
+//            item.put("userID", AttributeValue.builder().s(user.getUserID().toString).build());
+//
+//            Map<String, AttributeValue> item = new HashMap<>();
+//            item.put("userID", AttributeValue.builder().s(user.getUserId().toString()).build());
+//            if (user.getUserType() != null)
+//                item.put("userType", AttributeValue.builder().s(user.getUserType().toString()).build());
+//            if (user.getUserName() != null)
+//                item.put("userName", AttributeValue.builder().s(user.getUserName()).build());
+//            if (user.getPasswordHash() != null)
+//                item.put("passwordHash", AttributeValue.builder().s(user.getPasswordHash()).build());
+//
+////            if (user.getEvents() != null && !user.getEvents().isEmpty()) {
+////                List<AttributeValue> eventsList = user.getEvents().stream()
+////                        .map(uuid -> AttributeValue.builder().s(uuid.toString()).build())
+////                        .collect(Collectors.toList());
+////                item.put("events", AttributeValue.builder().l(eventsList).build());
+////            }
+//
+//            item.put("createdAt", AttributeValue.builder().s(Instant.now().toString()).build());
+//
+//            PutItemRequest request = PutItemRequest.builder()
+//                    .tableName(tableName)
+//                    .item(item)
+//                    .conditionExpression("attribute_not_exists(userID)")
+//                    .build();
+//
+//            dynamoDbClient.putItem(request);
+//
+//
+//
+//        } catch (ConditionalCheckFailedException e) {
+//            logger.error("User with id {} already exists", user.getUserId());
+//            throw new IllegalArgumentException("User with id " + user.getUserId() + " already exists.");
+//        } catch (Exception e) {
+//            logger.error("Error creating user {}: {}", user.getUserId(), e.getMessage());
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     public void updateUser(String userId, User user) {
         logger.info("Updating user with id {}", userId);
