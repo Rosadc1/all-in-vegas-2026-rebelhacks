@@ -1,10 +1,9 @@
-import type { Event } from "./event-service-types";
-
-export interface user { 
-    userID:string,
+export interface user {
+    userID: string,
     userType: userType,
-    pwd: string,
-    events: Event[]
+    userName: string,
+    passwordHash: string,
+    events: string[]
 }
 
 export type userType = "operator" | "customer";
