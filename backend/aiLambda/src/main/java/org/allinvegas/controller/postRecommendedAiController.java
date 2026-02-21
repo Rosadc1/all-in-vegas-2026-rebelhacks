@@ -28,7 +28,7 @@ public class postRecommendedAiController implements RequestHandler<Map<String,Ob
 
             List<Event> events = eventService.getAllEvents();
 
-            List<String> recommended = service.recommendEvents(prompt, events);
+            String recommended = service.recommendEvents(prompt, events);
 
             Map<String,Object> response = Map.of(
                     "recommended", recommended

@@ -10,10 +10,9 @@ import java.util.*;
 public class aiService {
 
     private static final String apiKey = System.getenv("apiKey");
+    private final tools.jackson.databind.ObjectMapper mapper = new tools.jackson.databind.ObjectMapper();
 
-    public List<String> recommendEvents(String userPrompt, List<Event> events) {
-
-        List<String> recommended = new ArrayList<>();
+    public String recommendEvents(String userPrompt, List<Event> events) {
 
         String prompt = buildRecommendationPrompt(userPrompt, events);
 
@@ -33,36 +32,21 @@ public class aiService {
                 .body(body)
                 .asJson();
 
-        String output = response.getBody()
-                .getObject()
+
+
+
+        return response.getBody().getObject()
                 .getJSONArray("choices")
                 .getJSONObject(0)
                 .getJSONObject("message")
                 .getString("content");
-
-        JSONArray result = new JSONArray(output);
-
-        for (int i = 0; i < result.length(); i++) {
-            recommended.add(result.getString(i));
-        }
-
-        return recommended;
     }
 
     private String buildRecommendationPrompt(String userPrompt, List<Event> events) {
 
         JSONArray eventArray = new JSONArray();
 
-        for (Event e : events) {
-            JSONObject obj = new JSONObject()
-                    .put("eventID", e.getEventID().toString())
-                    .put("title", e.getTitle())
-                    .put("description", e.getDescription())
-                    .put("location", e.getLocation())
-                    .put("tags", e.getTag());
-
-            eventArray.put(obj);
-        }
+        String json = mapper.writeValueAsString(events);
 
         return """
         You are an event recommendation system.
@@ -73,9 +57,19 @@ public class aiService {
         From the list of events below, return ONLY the title of events the user would like.
 
         Rules:
-        - Use tags, title, and description
-        - Return as a JSON array of Strings 
-        - No explanations
+       
+        
+        STRICT RULES:
+            - Output ONLY plain text.
+            - NO Markdown formatting (no **, no ##, no backticks).
+            - NO bullet points or lists.
+            - NO bolding or italics.
+            - Write it as a single, natural paragraph.
+            - Start with a friendly greeting.
+            - Use tags, title, and description ONLY
+            - Return as a Single String
+            - No explanations,
+            - No List, only a a plain string
 
         Events:
         """ + eventArray.toString();
