@@ -4,6 +4,7 @@ import './App.css'
 import { Routes, Route} from 'react-router';
 import { routerMap } from './global/routerMap';
 import { AppProvider } from './context/AppContext';
+import EventBuilderHost from './features/eventBuilder/eventBuilderHost';
 
 const AppHost = lazy(() => import('@/features/common/appHost/appHost'));
 const OrganizerGuard = lazy(() => import('@/features/auth/organizerGuard'));
@@ -16,7 +17,7 @@ const CalendarPage = lazy(() => import('@/features/calendar/CalendarPage').then(
 
 const Login = lazy(() => import('@/features/auth/authHost/login').then(m => ({ default: m.Login })));
 const Signup = lazy(() => import('@/features/auth/authHost/signUp').then(m => ({ default: m.Signup })));
-const EventBuilderHost = lazy(() => import('@/features/eventBuilder/eventBuilderHost').then(m => ({ default: m.default })));
+
 function App() {
   return (
     <AppProvider>

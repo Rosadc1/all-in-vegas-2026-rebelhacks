@@ -10,4 +10,4 @@ export const lasVegasCenter = {
     lng: -115.1398
 }
 
-export const defaultZoomLevel = 12;
+export const defaultZoomLevel = 18;
