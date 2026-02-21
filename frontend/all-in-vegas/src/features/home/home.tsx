@@ -1,20 +1,16 @@
 import { useState } from 'react';
 import { Search, Filter, TrendingUp, Calendar as CalendarIcon, MapPin } from 'lucide-react';
-import { motion } from 'motion/react';
-import type { userType } from '@/types/user-service-types';
+import { motion, AnimatePresence } from 'motion/react';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ImageWithFallback } from '@/components/image/ImageWithFallback';
-import { useNavigate } from 'react-router';
 import { mockEvents } from './mockEvents';
+import { EventSlideout } from './EventSlideout';
+import type { Event } from '@/types/event-service-types';
 
-interface HomePageProps {
-    userType?: userType | null;
-}
-
-export function HomePage({ userType: _userType }: HomePageProps) {
+export function HomePage() {
     const [searchQuery, setSearchQuery] = useState('');
-    const navigate = useNavigate();
+    const [selectedEvent, setSelectedEvent] = useState<Event | null>(null);
 
     const filteredEvents = mockEvents.filter(event =>
         event.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -76,7 +72,7 @@ export function HomePage({ userType: _userType }: HomePageProps) {
                                         key={event.eventID}
                                         whileHover={{ scale: 1.01 }}
                                         whileTap={{ scale: 0.99 }}
-                                        onClick={() => navigate(`/catalog/convention/${event.eventID}`)}
+                                        onClick={() => setSelectedEvent(event)}
                                         className="bg-card rounded-xl overflow-hidden cursor-pointer border border-border hover:border-secondary transition-all group relative"
                                     >
                                         <div className="absolute top-0 left-0 w-1 h-full bg-primary z-10" />
@@ -126,7 +122,7 @@ export function HomePage({ userType: _userType }: HomePageProps) {
                                     key={event.eventID}
                                     whileHover={{ y: -4 }}
                                     whileTap={{ scale: 0.98 }}
-                                    onClick={() => navigate(`/catalog/convention/${event.eventID}`)}
+                                    onClick={() => setSelectedEvent(event)}
                                     className="bg-card rounded-xl overflow-hidden cursor-pointer border border-border hover:border-secondary transition-all"
                                 >
                                     <div className="relative h-48 overflow-hidden">
@@ -164,6 +160,16 @@ export function HomePage({ userType: _userType }: HomePageProps) {
                 </div>
             </div>
 
+            {/* Event Slideout */}
+            <AnimatePresence>
+                {selectedEvent && (
+                    <EventSlideout
+                        key={selectedEvent.eventID}
+                        event={selectedEvent}
+                        onClose={() => setSelectedEvent(null)}
+                    />
+                )}
+            </AnimatePresence>
         </div>
     );
 }

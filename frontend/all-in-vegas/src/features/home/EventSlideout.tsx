@@ -1,52 +1,47 @@
-import { useState } from 'react';
 import { motion } from 'motion/react';
 import { X, Calendar, MapPin, Bookmark, BookmarkCheck, ChevronRight, Clock } from 'lucide-react';
 import type { Event } from '@/types/event-service-types';
-import type { userType } from '@/types/user-service-types';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ImageWithFallback } from '@/components/image/ImageWithFallback';
-import { mockVenues } from './mockEvents';
+import { useNavigate } from 'react-router';
+import { catalogVenues, catalogEvents } from '@/features/catalog/mockData';
+import { useAppContext } from '@/context/AppContext';
 
 interface EventSlideoutProps {
     event: Event;
     onClose: () => void;
-    userType?: userType | null;
 }
 
-export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) {
-    const [isSaved, setIsSaved] = useState(false);
-    const [savedVenues, setSavedVenues] = useState<Set<string>>(new Set());
+export function EventSlideout({ event, onClose }: EventSlideoutProps) {
+    const { userType, toggleSaveVenue, isVenueSaved } = useAppContext();
+    const navigate = useNavigate();
 
     const displayTags = event.tag.filter(t => t !== 'featured');
     const categoryTag = displayTags[0];
     const startDate = event.date[0] ? new Date(event.date[0]) : null;
     const endDate = event.date[1] ? new Date(event.date[1]) : null;
 
-    const handleSaveEvent = () => {
-        if (!userType) {
-            alert('Please login to save events');
-            return;
-        }
-        setIsSaved(!isSaved);
-    };
+    const eventVenues = catalogVenues.filter(v => v.eventID === event.eventID);
+    const parentCatalogEvent = catalogEvents.find(e => e.id === event.eventID);
 
-    const handleSaveVenue = (venueId: string) => {
+    const handleSaveVenue = (e: React.MouseEvent, venueId: string) => {
+        e.stopPropagation();
         if (!userType) {
             alert('Please login to save venues');
             return;
         }
-        setSavedVenues(prev => {
-            const next = new Set(prev);
-            if (next.has(venueId)) {
-                next.delete(venueId);
-            } else {
-                next.add(venueId);
-            }
-            return next;
-        });
+        const venue = eventVenues.find(v => v.venueID === venueId);
+        if (venue && parentCatalogEvent) {
+            toggleSaveVenue(venue, parentCatalogEvent);
+        }
+    };
+
+    const handleVenueClick = (venueId: string) => {
+        onClose();
+        navigate(`/catalog/venue/${venueId}`);
     };
 
     return (
@@ -110,24 +105,6 @@ export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) 
                         </div>
                     </div>
 
-                    {/* Save Button */}
-                    <div className="px-6 py-4 border-b border-border shrink-0">
-                        <Button
-                            onClick={handleSaveEvent}
-                            className={`w-full font-bold uppercase tracking-wider ${
-                                isSaved
-                                    ? 'bg-secondary text-secondary-foreground hover:bg-secondary/90'
-                                    : 'bg-card hover:bg-muted text-secondary border border-secondary'
-                            }`}
-                        >
-                            {isSaved ? (
-                                <><BookmarkCheck className="w-4 h-4 mr-2" />Saved to Calendar</>
-                            ) : (
-                                <><Bookmark className="w-4 h-4 mr-2" />Save Event</>
-                            )}
-                        </Button>
-                    </div>
-
                     {/* Tabs */}
                     <ScrollArea className="flex-1">
                         <div className="p-6">
@@ -176,14 +153,18 @@ export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) 
                                     </div>
                                 </TabsContent>
 
-                                {/* Schedule */}
+                                {/* Schedule — venues only, click to go to detail page */}
                                 <TabsContent value="schedule" className="mt-6 space-y-4">
                                     <h3 className="text-lg font-black text-foreground uppercase tracking-tight">Event Schedule</h3>
-                                    {mockVenues.map((venue) => (
+                                    {eventVenues.length === 0 && (
+                                        <p className="text-muted-foreground text-sm">No scheduled venues for this event.</p>
+                                    )}
+                                    {eventVenues.map((venue) => (
                                         <motion.div
                                             key={venue.venueID}
                                             whileHover={{ x: 4 }}
-                                            className="p-4 bg-card rounded-lg border border-border hover:border-secondary transition-colors"
+                                            onClick={() => handleVenueClick(venue.venueID)}
+                                            className="p-4 bg-card rounded-lg border border-border hover:border-secondary transition-colors cursor-pointer"
                                         >
                                             <div className="flex items-start justify-between gap-3">
                                                 <div className="flex-1">
@@ -196,18 +177,24 @@ export function EventSlideout({ event, onClose, userType }: EventSlideoutProps) 
                                                     <h4 className="font-black text-foreground mb-1 uppercase tracking-tight">{venue.title}</h4>
                                                     <p className="text-xs text-muted-foreground mb-2">{venue.description}</p>
                                                     <div className="flex items-center gap-3 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-                                                        <span className="flex items-center gap-1"><MapPin className="w-3 h-3" />{venue.location.x1}, {venue.location.y1}</span>
+                                                        <span className="flex items-center gap-1">
+                                                            <MapPin className="w-3 h-3" />
+                                                            {venue.location.x1}, {venue.location.y1}
+                                                        </span>
                                                     </div>
                                                 </div>
-                                                <button
-                                                    onClick={() => handleSaveVenue(venue.venueID)}
-                                                    className="p-2 hover:bg-muted rounded-lg transition-colors shrink-0"
-                                                >
-                                                    {savedVenues.has(venue.venueID)
-                                                        ? <BookmarkCheck className="w-5 h-5 text-secondary" />
-                                                        : <Bookmark className="w-5 h-5 text-muted-foreground" />
-                                                    }
-                                                </button>
+                                                <div className="flex items-center gap-2 shrink-0">
+                                                    <button
+                                                        onClick={(e) => handleSaveVenue(e, venue.venueID)}
+                                                        className="p-2 hover:bg-muted rounded-lg transition-colors"
+                                                    >
+                                                        {isVenueSaved(venue.venueID)
+                                                            ? <BookmarkCheck className="w-5 h-5 text-secondary" />
+                                                            : <Bookmark className="w-5 h-5 text-muted-foreground" />
+                                                        }
+                                                    </button>
+                                                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
+                                                </div>
                                             </div>
                                         </motion.div>
                                     ))}

@@ -30,9 +30,10 @@ export function CatalogPage({ userType: _userType }: CatalogPageProps) {
         return catalogVenues.filter(venue => {
             const matchesSearch =
                 venue.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                venue.description.toLowerCase().includes(searchQuery.toLowerCase())
-            // const matchesCategory = selectedCategory === 'All' || venue.category === selectedCategory;
-            return matchesSearch;
+                venue.description.toLowerCase().includes(searchQuery.toLowerCase());
+            const parentEvent = catalogEvents.find(e => e.id === venue.eventID);
+            const matchesCategory = selectedCategory === 'All' || parentEvent?.category === selectedCategory;
+            return matchesSearch && matchesCategory;
         });
     }, [searchQuery, selectedCategory]);
 
