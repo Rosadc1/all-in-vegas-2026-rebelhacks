@@ -8,10 +8,10 @@ export interface user {
     events: string[]
 }
 
-export type userType = "ATTENDEE" | "ORGANIZER";
+export type userType = "CUSTOMER" | "OPERATOR";
 
 export type createUserRequest = Omit<user, "userID" | "events">;
-export type createUserResponse = generalResponse;
+export type createUserResponse = { userID: string } | generalResponse;
 
 export type getUserByIdRequest = { userID: string };
 export type getUserByIdResponse = user;

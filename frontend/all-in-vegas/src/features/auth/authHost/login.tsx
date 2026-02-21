@@ -8,34 +8,47 @@ import { Button } from "@/components/ui/button";
 import { routerMap } from "@/global/routerMap";
 import { useState } from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-
+import { useAuthAlert } from "@/hooks/authAlertHook";
+import { AuthAlert } from "./authAlert";
+import { useGetUserIdByCredentialsMutation } from "@/services/user-service";
 export function Login() { 
     const nav = useNavigate();
-    const [tab, setTab] = useState<"ATTENDEE" | "ORGANIZER">("ATTENDEE");
+    const [tab, setTab] = useState<"CUSTOMER" | "OPERATOR">("CUSTOMER");
+    const [getUserIdByCredentials, { isLoading}] = useGetUserIdByCredentialsMutation();
+    const { alertDescription, alertTitle, isAlertOpen, triggerAlert, setIsAlertOpen } = useAuthAlert();
     const { handleSubmit, register, formState } = useForm<UserLoginData>({
         resolver: zodResolver(userLoginSchema)
     });
-    /*
+
+    
     const loginUser = async (data:UserLoginData) => { 
         try { 
-            
-        } catch() { 
-
-        } finally { 
-
+            const response = await getUserIdByCredentials({
+                userName: data.userName,
+                passwordHash: data.pwd,
+            }).unwrap();
+            const userID = 'userID' in response ? response.userID : null;
+            if(userID) { 
+                localStorage.setItem("userID", userID);
+                nav(routerMap.HOME);
+            } else { 
+                throw new Error("Invalid credentials");
+            }
+        } catch(e) { 
+            triggerAlert("Login Failed", `An error occurred while logging in: ${e}`);
         }
     }
-    */
+    
 
     return(
         <form
-            onSubmit={handleSubmit((data) => console.log(data, tab))}
+            onSubmit={handleSubmit((data) => loginUser(data))}
             className="flex flex-col gap-5"
         >
-            <Tabs defaultValue="ATTENDEE" className="w-full" onValueChange={(value) => setTab(value as "ATTENDEE" | "ORGANIZER")}>
+            <Tabs defaultValue="CUSTOMER" className="w-full" onValueChange={(value) => setTab(value as "CUSTOMER" | "OPERATOR")}>
                 <TabsList className="w-full">
-                    <TabsTrigger value="ATTENDEE" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">ATTENDEE</TabsTrigger>
-                    <TabsTrigger value="ORGANIZER" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">ORGANIZER</TabsTrigger>
+                    <TabsTrigger value="CUSTOMER" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">CUSTOMER</TabsTrigger>
+                    <TabsTrigger value="OPERATOR" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">OPERATOR</TabsTrigger>
                 </TabsList>
             </Tabs>
             <Field >
@@ -60,6 +73,12 @@ export function Login() {
             <p className="text-sm text-muted-foreground text-center">
                 DON'T HAVE AN ACCOUNT? <a className="text-secondary font-bold cursor-pointer" onClick={() => nav("/" + routerMap.SIGNUP)}>SIGN UP</a>
             </p>
+            <AuthAlert 
+                isOpen={isAlertOpen}
+                onOpenChange={(open) => setIsAlertOpen(open)}
+                title={alertTitle}
+                description={alertDescription}
+            />
         </form>
     );
 }

@@ -10,25 +10,35 @@ import { routerMap } from "@/global/routerMap";
 import { useNavigate } from "react-router";
 import { useCreateUserMutation } from "@/services/user-service";
 import { LoaderCircle } from "lucide-react";
+import { AuthAlert } from "./authAlert";
+import { useAuthAlert } from "@/hooks/authAlertHook";
 
 export function Signup() { 
-    const [tab, setTab] = useState<"ATTENDEE" | "ORGANIZER">("ATTENDEE");
+    const [tab, setTab] = useState<"CUSTOMER" | "OPERATOR">("CUSTOMER");
     const nav = useNavigate();
     const [createUser, {isLoading}] = useCreateUserMutation();
     const { handleSubmit, register, formState } = useForm<UserSignupData>({
         resolver: zodResolver(userSignupSchema)
     });
+    const { alertDescription, alertTitle, isAlertOpen, triggerAlert, setIsAlertOpen } = useAuthAlert();
     
     const signUpUser = async (data:UserSignupData) => { 
         try { 
-            await createUser({  
+            const response = await createUser({  
                 userName: data.userName,
                 passwordHash: data.pwd,
                 userType: tab,
             }).unwrap();
-            nav(routerMap.HOME);
+            
+            if(('userID' in response)) {
+                localStorage.setItem("userID", response.userID);
+                nav(routerMap.HOME);
+            } else { 
+                throw new Error("User creation failed, no userID returned");
+            }
+
         } catch(e) { 
-            console.error(e);
+            triggerAlert("Sign Up Failed", `An error occurred while creating your account: ${e}`);
         }
     }
 
@@ -37,10 +47,10 @@ export function Signup() {
             onSubmit={handleSubmit((data) => signUpUser(data))}
             className="flex flex-col gap-5"
         >
-            <Tabs defaultValue="ATTENDEE" className="w-full" onValueChange={(value) => setTab(value as "ATTENDEE" | "ORGANIZER")}>
+            <Tabs defaultValue="CUSTOMER" className="w-full" onValueChange={(value) => setTab(value as "CUSTOMER" | "OPERATOR")}>
                 <TabsList className="w-full">
-                    <TabsTrigger value="ATTENDEE" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">ATTENDEE</TabsTrigger>
-                    <TabsTrigger value="ORGANIZER" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">ORGANIZER</TabsTrigger>
+                    <TabsTrigger value="CUSTOMER" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">CUSTOMER</TabsTrigger>
+                    <TabsTrigger value="OPERATOR" className="data-[state=active]:text-black data-[state=active]:bg-secondary text-xs font-bold">OPERATOR</TabsTrigger>
                 </TabsList>
             </Tabs>
             <Field >
@@ -75,6 +85,13 @@ export function Signup() {
             <p className="text-sm text-muted-foreground text-center">
                 ALREADY A USER? <a className="text-secondary font-bold cursor-pointer" onClick={() => nav("/" + routerMap.LOGIN)}>LOGIN</a>
             </p>
+            <AuthAlert 
+                isOpen={isAlertOpen}
+                onOpenChange={(open) => setIsAlertOpen(open)}
+                title={alertTitle}
+                description={alertDescription}
+            />
         </form>
+        
     );
 }

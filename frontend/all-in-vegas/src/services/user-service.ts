@@ -1,4 +1,4 @@
-import type { deleteUserResponse, deleteUserRequest,  getUserByIdRequest,  getUserByIdResponse,  patchUserRequest,  patchUserResponse, createUserRequest, createUserResponse } from '@/types/user-service-types';
+import type { deleteUserResponse, deleteUserRequest,  getUserByIdRequest,  getUserByIdResponse,  patchUserRequest,  patchUserResponse, createUserRequest, createUserResponse, getUserIdByCredentialsResponse, getUserIdByCredentialsRequest } from '@/types/user-service-types';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 import { apiBaseURL } from '@/global/apibaseURL';
 
@@ -11,6 +11,7 @@ export const userAPI = createApi({
         getUserById: builder.query<getUserByIdResponse, getUserByIdRequest>({
             query: (arg) => ({
                 url: `users/${arg.userID}`,
+                method: 'GET',
             }),
         }),
         patchUser: builder.mutation<patchUserResponse,patchUserRequest>({
@@ -33,6 +34,13 @@ export const userAPI = createApi({
                 body: arg
             }),
         }),
+        getUserIdByCredentials: builder.mutation<getUserIdByCredentialsResponse, getUserIdByCredentialsRequest>({
+            query: (arg) => ({
+                url: `users/${arg.userName}`,
+                method: 'POST',
+                body: { passwordHash: arg.passwordHash }
+            }),
+        }),
     }),
 });
 
@@ -41,5 +49,6 @@ export const {
     useLazyGetUserByIdQuery,
     usePatchUserMutation,
     useDeleteUserMutation,
-    useCreateUserMutation
+    useCreateUserMutation,
+    useGetUserIdByCredentialsMutation
 } = userAPI;
