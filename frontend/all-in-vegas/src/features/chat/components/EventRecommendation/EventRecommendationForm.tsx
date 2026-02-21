@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import type { EventRecommendationFormData } from '@/utils/chat/eventRecommendationSchema';
+import { LoaderCircle } from 'lucide-react';
 
 interface EventRecommendationFormProps {
   isLoading?: boolean;
@@ -48,7 +49,8 @@ export function EventRecommendationForm({
         disabled={isLoading}
         className="w-full"
       >
-        {isLoading ? 'Finding Events...' : 'Get Recommendations'}
+        {isLoading && <LoaderCircle className='w-4 h-4 animate-spin'/>}
+        {isLoading ? 'Generating recommendations ...' : 'Get Recommendations'}
       </Button>
     </form>
   );
