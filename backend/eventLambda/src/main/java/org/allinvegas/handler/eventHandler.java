@@ -54,14 +54,17 @@ public class eventHandler implements RequestHandler<Map<String,Object>, Map<Stri
         } else if (httpMethod.equals("GET")) {
             // Calls and Return the GET eventHandler
             if (path.startsWith("/events/{userID}")) {
-                getListEventByIDController.handleRequest(event, context);
+                return getListEventByIDController.handleRequest(event, context);
             } else if (path.startsWith("/events")) {
                 return getListEventController.handleRequest(event, context);
             } else if (path.startsWith("/event/{eventID}")) {
                 return getEventController.handleRequest(event, context);
             } else {
                 logger.error("Invalid HTTP Method. Check API Gateway configuration.{}", event.toString());
-                throw new java.lang.IllegalArgumentException("Invalid HTTP Method. Check API Gateway configuration.");
+                return Map.of(
+                        "statusCode", 405,
+                        "body", "{\"status\":405,\"message\":\"Method Not Allowed\"}"
+                );
             }
         } else if (httpMethod.equals("PATCH")) {
             // Call and return the PATCH eventHandler
