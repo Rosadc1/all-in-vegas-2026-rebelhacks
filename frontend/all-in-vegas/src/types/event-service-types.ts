@@ -10,7 +10,6 @@ export interface Event {
 
 // CREATE EVENT
 export interface createEventRequest {
-    eventID: string,
     userId: string,
     title: string,
     description: string,
@@ -20,7 +19,7 @@ export interface createEventRequest {
 
 export interface createEventResponse {
     status: number,
-    message: string
+    eventID:string
 }
 
 // GET EVENT BY ID

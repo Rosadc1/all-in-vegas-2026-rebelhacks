@@ -1,6 +1,7 @@
 import { Outlet } from "react-router";
 import { Footer } from "@/features/common/footer/footer";
 import Header from "../header/Header";
+import { AIChatHost } from "@/features/chat";
 
 export default function AppHost() { 
 
