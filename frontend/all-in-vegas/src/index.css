@@ -153,6 +153,31 @@
     @apply bg-background text-foreground;
   }
 
+  /* Global scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 20px;
+    height: 20px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: #1a1a2e;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: #e63946;
+    border-radius: 6px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: #ffb703;
+  }
+
+  /* Firefox scrollbar styling */
+  * {
+    scrollbar-color: #e63946 #1a1a2e;
+    scrollbar-width: thin;
+  }
+
 }
 
 .nav-btn { 
