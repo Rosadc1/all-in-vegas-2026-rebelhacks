@@ -31,7 +31,7 @@ public class userHandler implements RequestHandler<Map<String, Object>, Map<Stri
         // GET: Get the User
         // PATCH: Update the User attributes
         String httpMethod = (String) event.get("httpMethod");
-        String path = (String) event.get("path");
+        String path = (String) event.get("resource");
 
         logger.info("event: " + event);
         logger.info("Context: " + context.toString());
@@ -77,7 +77,7 @@ public class userHandler implements RequestHandler<Map<String, Object>, Map<Stri
 //        }
 
         if (httpMethod.equals("POST")) {
-            if (path.startsWith("/users/{userName}")) {
+            if (path.startsWith("/users/login/{userName}")) {
                 return getUserIDByUserNameController.handleRequest(event, context);
             } else if (path.startsWith("/users")) {
                 return postUserController.handleRequest(event, context);
