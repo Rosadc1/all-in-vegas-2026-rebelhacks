@@ -24,6 +24,7 @@ public class getUserIDByUserNameController implements RequestHandler<Map<String,
         Map<String, Object> response = new HashMap<>();
 
         try {
+            String userName = ((Map<String,String>) event.get("pathParameters")).get("userName");
             String body = (String) event.get("body");
 
             if (body == null || body.isBlank()) {
@@ -34,7 +35,6 @@ public class getUserIDByUserNameController implements RequestHandler<Map<String,
 
             Map<String, String> credentials = mapper.readValue(body, Map.class);
 
-            String userName = credentials.get("userName");
             String passwordHash = credentials.get("passwordHash");
 
             if (userName == null || passwordHash == null) {

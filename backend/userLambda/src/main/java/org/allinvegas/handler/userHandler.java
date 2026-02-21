@@ -52,18 +52,41 @@ public class userHandler implements RequestHandler<Map<String, Object>, Map<Stri
             );
         }
 
+//        if (httpMethod.equals("POST")) {
+//            // Calls and Return the POST userHandler
+//            return postUserController.handleRequest(event, context);
+//        } else if (httpMethod.equals("GET")) {
+//            if (path.startsWith("/users/{userID}")) {
+//                return getUserController.handleRequest(event, context);
+//            } else if (path.startsWith("/users/{userName}/{password}")) {
+//                return getUserIDByUserNameController.handleRequest(event, context);
+//            } else {
+//                logger.error("Invalid HTTP Method. Check API Gateway configuration.{}", event.toString());
+//                throw new java.lang.IllegalArgumentException("Invalid HTTP Method. Check API Gateway configuration.");
+//            }
+//        } else if (httpMethod.equals("PATCH")) {
+//            // Call and return the PATCH userHandler
+//            return updateUserController.handleRequest(event, context);
+//        } else if (httpMethod.equals("DELETE")) {
+//            return deleteUserController.handleRequest(event, context);
+//        } else {
+//            return Map.of(
+//                    "statusCode", 405,
+//                    "body", "{\"status\":405,\"message\":\"Method Not Allowed\"}"
+//            );
+//        }
+
         if (httpMethod.equals("POST")) {
-            // Calls and Return the POST userHandler
-            return postUserController.handleRequest(event, context);
-        } else if (httpMethod.equals("GET")) {
-            if (path.startsWith("/users/{userID}")) {
-                return getUserController.handleRequest(event, context);
-            } else if (path.startsWith("/users/{userName}/{password}")) {
+            if (path.startsWith("/users")) {
+                return postUserController.handleRequest(event, context);
+            } else if (path.startsWith("/users/{userName}")) {
                 return getUserIDByUserNameController.handleRequest(event, context);
             } else {
                 logger.error("Invalid HTTP Method. Check API Gateway configuration.{}", event.toString());
                 throw new java.lang.IllegalArgumentException("Invalid HTTP Method. Check API Gateway configuration.");
             }
+        } else if (httpMethod.equals("GET")) {
+            return getUserController.handleRequest(event, context);
         } else if (httpMethod.equals("PATCH")) {
             // Call and return the PATCH userHandler
             return updateUserController.handleRequest(event, context);
