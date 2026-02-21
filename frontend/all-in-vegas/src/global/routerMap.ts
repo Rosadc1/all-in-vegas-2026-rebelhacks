@@ -7,7 +7,8 @@ export const routerMap = {
     CONVENTION_DETAIL: 'catalog/convention/:conventionId',
     CALENDAR: 'calendar',
     MAPS: 'maps',
-    CREATE: 'createEvent',
-    EDIT: 'editEvent',
-    MENU: 'menu'
+    CREATE: 'create',
+    EDIT: 'edit',
+    MENU: 'menu',
+    Event_BUILDER: 'eventBuilder',
 }

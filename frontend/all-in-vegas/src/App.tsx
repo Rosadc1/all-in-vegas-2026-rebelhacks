@@ -16,7 +16,7 @@ const CalendarPage = lazy(() => import('@/features/calendar/CalendarPage').then(
 
 const Login = lazy(() => import('@/features/auth/authHost/login').then(m => ({ default: m.Login })));
 const Signup = lazy(() => import('@/features/auth/authHost/signUp').then(m => ({ default: m.Signup })));
-
+const EventBuilderHost = lazy(() => import('@/features/eventBuilder/eventBuilderHost').then(m => ({ default: m.default })));
 function App() {
   return (
     <AppProvider>
@@ -30,9 +30,9 @@ function App() {
             <Route path={routerMap.CALENDAR} element={<CalendarPage/>}/>
             <Route path={routerMap.MAPS} element={<></>}/>
             <Route path={routerMap.MENU} element={<></>}/>
-            <Route element={<OrganizerGuard/>}>
-              <Route path={routerMap.CREATE} element={<></>}/>
-              <Route path={routerMap.EDIT} element={<></>}/>
+            <Route path={routerMap.Event_BUILDER} element={<OrganizerGuard/>}>
+              <Route path={routerMap.CREATE} element={<EventBuilderHost/>}/>
+              <Route path={routerMap.EDIT} element={<EventBuilderHost/>}/>
             </Route>
           </Route>
           <Route element={<AuthHost/>}>
