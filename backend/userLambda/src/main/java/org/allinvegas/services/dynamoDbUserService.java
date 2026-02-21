@@ -1,14 +1,29 @@
 package org.allinvegas.services;
 
+import java.time.Instant;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
 import org.allinvegas.model.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
-import software.amazon.awssdk.services.dynamodb.model.*;
 
-import java.time.Instant;
-import java.util.*;
-import java.util.stream.Collectors;
+import software.amazon.awssdk.services.dynamodb.DynamoDbClient;
+import software.amazon.awssdk.services.dynamodb.model.AttributeAction;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValue;
+import software.amazon.awssdk.services.dynamodb.model.AttributeValueUpdate;
+import software.amazon.awssdk.services.dynamodb.model.ConditionalCheckFailedException;
+import software.amazon.awssdk.services.dynamodb.model.DeleteItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.DynamoDbException;
+import software.amazon.awssdk.services.dynamodb.model.GetItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.GetItemResponse;
+import software.amazon.awssdk.services.dynamodb.model.PutItemRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanRequest;
+import software.amazon.awssdk.services.dynamodb.model.ScanResponse;
+import software.amazon.awssdk.services.dynamodb.model.UpdateItemRequest;
 
 public class dynamoDbUserService {
     private final DynamoDbClient dynamoDbClient;
@@ -102,10 +117,20 @@ public class dynamoDbUserService {
             item.put("createdAt",
                     AttributeValue.builder().s(Instant.now().toString()).build());
 
+            Map<String, AttributeValue> itemUsername = new HashMap<>();
+            itemUsername.put("userName", AttributeValue.builder().s(user.getUserName()).build());
+
+            PutItemRequest requestUserName = PutItemRequest.builder()
+                    .tableName("Username")
+                    .item(itemUsername)
+                    .conditionExpression("attribute_not_exists(userName)")
+                    .build();
+            
+            dynamoDbClient.putItem(requestUserName);
+
             PutItemRequest request = PutItemRequest.builder()
                     .tableName(tableName)
                     .item(item)
-                    .conditionExpression("attribute_not_exists(userName)")
                     .build();
 
             dynamoDbClient.putItem(request);
