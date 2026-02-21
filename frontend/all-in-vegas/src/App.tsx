@@ -5,6 +5,7 @@ import { Routes, Route} from 'react-router';
 import { routerMap } from './global/routerMap';
 import { AppProvider } from './context/AppContext';
 import EventBuilderHost from './features/eventBuilder/eventBuilderHost';
+import { MapsPage } from './features/maps/MapsPage';
 
 const AppHost = lazy(() => import('@/features/common/appHost/appHost'));
 const OrganizerGuard = lazy(() => import('@/features/auth/organizerGuard'));
@@ -32,7 +33,7 @@ function App() {
             <Route path={routerMap.VENUE_DETAIL} element={<VenueDetailPage/>}/>
             <Route path={routerMap.CONVENTION_DETAIL} element={<ConventionDetailPage/>}/>
             <Route path={routerMap.CALENDAR} element={<CalendarPage/>}/>
-            <Route path={routerMap.MAPS} element={<></>}/>
+            <Route path={routerMap.MAPS} element={<MapsPage/>}/>
             <Route path={routerMap.MENU} element={<MenuPage/>}/>
             <Route path={routerMap.ABOUT} element={<AboutPage/>}/>
             <Route path={routerMap.HELP} element={<HelpCenterPage/>}/>
