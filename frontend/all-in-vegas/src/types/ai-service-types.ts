@@ -3,5 +3,5 @@ export interface GetEventRecommendationsRequest {
 }
 
 export interface GetEventRecommendationsResponse {
-  response: string;
+  recommended: string;
 }

@@ -80,7 +80,8 @@ export function AIChatModal({
     setIsLoading(true);
     try {
       const response = await getEventRecommendations({ prompt: data.prompt }).unwrap();
-      setAiResponse(response.response);
+      console.log(response);
+      setAiResponse(response.recommended);
       setFormStep('eventRecommendationResponse');
     } catch (error) {
       console.error('Error getting recommendations:', error);
