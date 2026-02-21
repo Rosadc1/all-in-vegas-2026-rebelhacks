@@ -6,12 +6,13 @@ import { routerMap } from './global/routerMap';
 
 const AppHost = lazy(() => import('@/features/common/appHost/appHost'));
 const OrganizerGuard = lazy(() => import('@/features/auth/organizerGuard'));
+const HomePage = lazy(() => import('@/features/home/home').then(m => ({ default: m.HomePage })));
 function App() {
 
   return (
     <Routes>
         <Route element={<AppHost/>}>
-            <Route index path={routerMap.HOME} element={<></>}/>
+            <Route index path={routerMap.HOME} element={<HomePage/>}/>
             <Route path={routerMap.CATALOG} element={<></>}/>
             <Route path={routerMap.CALENDAR} element={<></>}/>
             <Route path={routerMap.MAPS} element={<></>}/>
